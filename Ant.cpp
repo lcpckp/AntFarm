@@ -10,16 +10,16 @@
 Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 {
 	// Ant properties
-	body.setOrigin(1, 1);
+	body.setOrigin(3, 3);
 	body.setPosition(x, y);
-	body.setRadius(1);
+	body.setRadius(3);
 	body.setFillColor(resourceContainer.antColor);
 	hasFood = false;
 
 	// Movement Settings
 	movementSpeed = 50.0f;
 	movementHeading = (std::rand() / (RAND_MAX + 1.0f)) * 2 * 4 - 4;
-	movementRandomness = 0.001f;
+	movementRandomness = 0.125f;
 
 	// Thresholds
 	touchThreshold = 10.0f;
@@ -30,7 +30,8 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	maxPheroStrength = 25.0f; // How much pheromone to lay down per tick
 	forwardSampleDistance = 10;
 	sideSampleDistance = 10;
-	followStrength = 0.1f; // How much to obey the pheromones
+	followStrength = 0.01f; // How much to obey the pheromones
+	seekingTrailType = pheroType::TO_FOOD; // default is looking for food
 
 	// Help/Reference
 	gridWidth = pheroGrid.getWidth();
@@ -52,7 +53,7 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	deltaX = 0, deltaY = 0.0f;
 	sampleCenterX = 0, sampleCenterY = 0;
 	currCellX = 0, currCellY = 0;
-	seekingTrailType = pheroType::TO_FOOD;
+	
 	totalStrength = 0.0f;
 	maxStrength = 0.0f;
 	index = 0;
@@ -118,7 +119,7 @@ void Ant::MovementTick(float deltaTime, PheromoneGrid& pheroGrid)
 	body.setPosition(body.getPosition() + (movement * deltaTime));
 
 	// Handle out of bounds ants (Reverse heading + recalculate new position)
-	if (body.getPosition().x > pheroGrid.getWidth() || body.getPosition().y > pheroGrid.getHeight() || body.getPosition().x < 0 || body.getPosition().y < 0)
+	if (body.getPosition().x > gridWidth || body.getPosition().y > gridHeight || body.getPosition().x < 0 || body.getPosition().y < 0)
 	{
 		movementHeading += 3.14f;
 		body.setPosition(sf::Vector2f((float)std::max(0, std::min((int)body.getPosition().x, gridWidth)), (float)std::max(0, std::min((int)body.getPosition().y, gridHeight))));

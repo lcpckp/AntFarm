@@ -9,7 +9,7 @@ public:
 	const int farmWidth = 1400;
 	const int farmHeight = 900;
 	const int pheroResolution = 5;
-	const int spawnClick = 1;
+	const int spawnClick = 50;
 
 	const sf::Color groundColor = sf::Color(254, 217, 155);
 	const sf::Color antColor = sf::Color(31, 32, 65);
