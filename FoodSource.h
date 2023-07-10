@@ -19,6 +19,7 @@ private:
 	// Properties
 	int foodAmount;
 	sf::CircleShape body;
+	sf::Text foodAmountText;
 
 
 };

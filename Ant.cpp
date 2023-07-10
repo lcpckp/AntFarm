@@ -10,9 +10,9 @@
 Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 {
 	// Ant properties
-	body.setOrigin(3, 3);
+	body.setOrigin(2, 2);
 	body.setPosition(x, y);
-	body.setRadius(3);
+	body.setRadius(2);
 	body.setFillColor(resourceContainer.antColor);
 	hasFood = false;
 
@@ -28,9 +28,9 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	// Trail laying/following settings
 	fallOffMultiplier = 2.0f; // How quickly their trail strength dies off as they move away from home or food
 	maxPheroStrength = 25.0f; // How much pheromone to lay down per tick
-	forwardSampleDistance = 10;
-	sideSampleDistance = 10;
-	followStrength = 0.01f; // How much to obey the pheromones
+	forwardSampleDistance = 2;
+	sideSampleDistance = 1;
+	followStrength = .05f; // How much to obey the pheromones
 	seekingTrailType = pheroType::TO_FOOD; // default is looking for food
 
 	// Help/Reference
@@ -40,7 +40,7 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 
 	// Debug stuff
 	antSampleVision = sf::VertexArray(sf::Lines, 2);
-	visionOptions = true;
+	visionOptions = false;
 	
 	// Preallocated temp variables (for speed I guess? I don't actually know)
 	timeSinceHome = 0.0f;
@@ -126,6 +126,26 @@ void Ant::MovementTick(float deltaTime, PheromoneGrid& pheroGrid)
 	}
 }
 
+/*//
+float Ant::CalculatePheromoneFollowAngle_NEW_TEST(PheromoneGrid& pheroGrid)
+{
+	// Get the cell that the ant is standing on
+	sampleCenterX = body.getPosition().x / resourceContainer.pheroResolution;
+	sampleCenterY = body.getPosition().y / resourceContainer.pheroResolution;
+	
+	double newOrientation = fmod((movementHeading + (angle * M_PI / 180.0)), (2.0 * M_PI));
+
+	double dx = round(cos(newOrientation));
+	double dy = round(sin(newOrientation));
+
+	neighbor.x = position.x + static_cast<int>(dx);
+	neighbor.y = position.y + static_cast<int>(dy);
+
+	neighbor; // position to sample
+	return 0.0f;
+}
+
+//*/
 float Ant::getRandomAngle()
 {
 	return (std::rand() / (RAND_MAX + 1.0f)) * 2 * movementRandomness - movementRandomness;
@@ -145,6 +165,7 @@ void Ant::TryDepositFood(std::vector<Home>& homeList)
 				timeSinceHome = 0.0f;
 				seekingTrailType = pheroType::TO_FOOD;
 				movementHeading += 3.14f;
+				body.setFillColor(sf::Color::Blue);
 			}
 		}
 		else if (distanceToHome < sightThreshold)
@@ -171,6 +192,7 @@ void Ant::TryGetFood(std::vector<FoodSource>& foodList)
 				timeSinceFood = 0.0f;
 				seekingTrailType = pheroType::TO_HOME;
 				movementHeading += 3.14f;
+				body.setFillColor(sf::Color::Green);
 			}
 		}
 		else if (distanceToFood < sightThreshold)

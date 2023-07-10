@@ -23,7 +23,7 @@ private:
 	float CalculatePheromoneFollowAngle(PheromoneGrid& pheroGrid);
 	float getRandomAngle();
 	void MovementTick(float deltaTime, PheromoneGrid& pheroGrid);
-	//float CalculateTurnEffect(PheromoneGrid& pheroGrid);
+	float CalculatePheromoneFollowAngle_NEW_TEST(PheromoneGrid& pheroGrid);
 
 	// Properties
 	sf::CircleShape body; // canonical x, y position

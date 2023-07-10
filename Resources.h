@@ -11,6 +11,8 @@ public:
 	const int pheroResolution = 5;
 	const int spawnClick = 50;
 
+	static sf::Font generalFont;
+
 	const sf::Color groundColor = sf::Color(254, 217, 155);
 	const sf::Color antColor = sf::Color(31, 32, 65);
 	const sf::Color homeTrailColor = sf::Color(91, 133, 170, 0);
