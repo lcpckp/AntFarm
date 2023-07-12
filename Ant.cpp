@@ -254,7 +254,7 @@ float Ant::CalculatePheromoneFollowAngle(PheromoneGrid& pheroGrid)
 
 	if (bestSampleStrength < 5)
 	{
-		return 0;
+		return movementHeading;
 	}
 	else
 	{
