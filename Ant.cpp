@@ -19,7 +19,7 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	// Movement Settings
 	movementSpeed = 50.0f;
 	movementHeading = (std::rand() / (RAND_MAX + 1.0f)) * 2 * 4 - 4;
-	movementRandomness = 0.125f;
+	movementRandomness = 0.075f;
 
 	// Thresholds
 	touchThreshold = 10.0f;
@@ -28,9 +28,8 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	// Trail laying/following settings
 	fallOffMultiplier = 2.0f; // How quickly their trail strength dies off as they move away from home or food
 	maxPheroStrength = 25.0f; // How much pheromone to lay down per tick
-	forwardSampleDistance = 2;
-	sideSampleDistance = 1;
-	followStrength = .05f; // How much to obey the pheromones
+	sampleTurnAngle = 30;
+	followStrength = 1.0f; // How much to obey the pheromones
 	seekingTrailType = pheroType::TO_FOOD; // default is looking for food
 
 	// Help/Reference
@@ -95,7 +94,7 @@ void Ant::updateAnt(PheromoneGrid& pheroGrid, std::vector<FoodSource>& foodList,
 	// Sample pheromones and update heading accordingly
 	desiredHeading = CalculatePheromoneFollowAngle(pheroGrid);
 
-	float headingDifference = (movementHeading - desiredHeading) * followStrength * deltaTime;
+	float headingDifference = (desiredHeading - movementHeading) * followStrength * deltaTime;
 	movementHeading += headingDifference;
 	
 	// Lay a trail
@@ -126,26 +125,6 @@ void Ant::MovementTick(float deltaTime, PheromoneGrid& pheroGrid)
 	}
 }
 
-/*//
-float Ant::CalculatePheromoneFollowAngle_NEW_TEST(PheromoneGrid& pheroGrid)
-{
-	// Get the cell that the ant is standing on
-	sampleCenterX = body.getPosition().x / resourceContainer.pheroResolution;
-	sampleCenterY = body.getPosition().y / resourceContainer.pheroResolution;
-	
-	double newOrientation = fmod((movementHeading + (angle * M_PI / 180.0)), (2.0 * M_PI));
-
-	double dx = round(cos(newOrientation));
-	double dy = round(sin(newOrientation));
-
-	neighbor.x = position.x + static_cast<int>(dx);
-	neighbor.y = position.y + static_cast<int>(dy);
-
-	neighbor; // position to sample
-	return 0.0f;
-}
-
-//*/
 float Ant::getRandomAngle()
 {
 	return (std::rand() / (RAND_MAX + 1.0f)) * 2 * movementRandomness - movementRandomness;
@@ -225,57 +204,63 @@ void Ant::LayTrail(PheromoneGrid& pheroGrid)
 
 float Ant::CalculatePheromoneFollowAngle(PheromoneGrid& pheroGrid)
 {
-	float highestStrength = 0.0;
-	int maxCellX = 0;
-	int maxCellY = 0;
-
 	// Get the cell that the ant is standing on
 	sampleCenterX = body.getPosition().x / resourceContainer.pheroResolution;
 	sampleCenterY = body.getPosition().y / resourceContainer.pheroResolution;
 
-	// Loop through sampling distance to get offsets
-	for (int x = -sideSampleDistance; x <= sideSampleDistance; x++)
+	double sampleOrientation;
+	double sampleDistance;
+	double totalSampleStrength = 0;
+	double bestSampleStrength = 0;
+	int bestAngle = 0;
+
+	for (int i = 2 * -sampleTurnAngle; i <= sampleTurnAngle * 2; i += sampleTurnAngle)
 	{
-		for (int y = -forwardSampleDistance; y <= forwardSampleDistance; y++)
-		{
-			if (!(x == 0 && y == 0))
-			{
-				// Get current cell with offsets
-				currCellX = sampleCenterX + x;
-				currCellY = sampleCenterY + y;
+		// convert current angle (i) to radians
+		sampleOrientation = fmod((movementHeading + (i * 3.14 / 180.0)), (2.0 * 3.14));
+		sampleDistance = touchThreshold;
 
-				// Calculate grid index based on x, y
-				index = currCellY * gridWidth + currCellX;
+		double stepX = std::cos(sampleOrientation) * resourceContainer.pheroResolution;
+		double stepY = std::sin(sampleOrientation) * resourceContainer.pheroResolution;
+		double currentX = body.getPosition().x;
+		double currentY = body.getPosition().y;
 
-				// If in bounds
-				if (index > 0 && index < gridSize)
-				{
-					// If this cell is the strongest, update the highestStrength value + direction of this cell.
-					if (pheroGrid.getIntensity(seekingTrailType, index) > highestStrength)
-					{
-						highestStrength = pheroGrid.getIntensity(seekingTrailType, index);
-						maxCellX = currCellX;
-						maxCellY = currCellY;
-					}
-				}
-			}
+		totalSampleStrength = 0;
+
+		while (sampleDistance >= 0) {
+			currCellX = std::round(currentX) / resourceContainer.pheroResolution;
+			currCellY = std::round(currentY) / resourceContainer.pheroResolution;
+			
+			totalSampleStrength += pheroGrid.getIntensity(seekingTrailType, currCellX, currCellY);
+
+			currentX += stepX;
+			currentY += stepY;
+			sampleDistance -= resourceContainer.pheroResolution;
+
+			antSampleVision[0] = body.getPosition();
+			antSampleVision[1] = sf::Vector2f(currentX, currentY);
+
+			
 		}
-	} // End sampling loop
 
-	directionX = maxCellX - sampleCenterX;
-	directionY = maxCellY - sampleCenterY;
+		if (totalSampleStrength > bestSampleStrength)
+		{
+			bestSampleStrength = totalSampleStrength;
+			bestAngle = i;
+		}
+	}
 
-	if (highestStrength <= 5)
-		return movementHeading;
+	std::cout << bestAngle << std::endl;
 
-
-
-	float averageHeading = std::atan2(directionY, directionX);
-
-	antSampleVision[0] = body.getPosition();
-	antSampleVision[1] = sf::Vector2f(body.getPosition().x + 10 * std::cos(averageHeading), body.getPosition().y + 10 * std::sin(averageHeading));
-
-	return averageHeading;
+	if (bestSampleStrength < 5)
+	{
+		return 0;
+	}
+	else
+	{
+		return fmod((movementHeading + (bestAngle * 3.14 / 180.0)), (2.0 * 3.14));
+	}
+	
 }
 
 

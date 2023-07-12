@@ -38,8 +38,7 @@ private:
 	float fallOffMultiplier;
 	float maxPheroStrength;
 	bool hasFood;
-	int forwardSampleDistance;
-	int sideSampleDistance;
+	int sampleTurnAngle;
 	float followStrength;
 	float turnSpeed;
 

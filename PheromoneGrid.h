@@ -20,6 +20,7 @@ public:
 	float getHomeIntensity(int i);
 	float getFoodIntensity(int i);
 	float getIntensity(pheroType type, int i);
+	float getIntensity(pheroType type, int x, int y);
 
 
 	// Functions
