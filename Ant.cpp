@@ -19,19 +19,20 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	// Movement Settings
 	movementSpeed = 44.0f;
 	movementHeading = (std::rand() / (RAND_MAX + 1.0f)) * 2 * 4 - 4;
-	movementRandomness = 0.1f;
+	movementRandomness = 0.075f;
 
 	// Thresholds
 	touchThreshold = 10.0f;
 	sightThreshold = 50.0f;
 
 	// Trail laying/following settings
-	fallOffMultiplier = 2.0f; // How quickly their trail strength dies off as they move away from home or food
-	maxPheroStrength = 25.0f; // How much pheromone to lay down per tick
-	sampleTurnAngle = 10;
-	numSamples = 10;
-	ignoreThreshold = 5.0f;
-	followStrength = 1.0f; // How much to obey the pheromones
+	fallOffMultiplier = 4.0f; // How quickly their trail strength dies off as they move away from home or food
+	maxPheroStrength = 30.0f; // How much pheromone to lay down per tick
+	sampleTurnAngle = 5;
+	numSamples = 5;
+	maxSampleDistance = 15.0f;
+	ignoreThreshold = 10.0f;
+	followStrength = 5.0f; // How much to obey the pheromones
 	seekingTrailType = pheroType::TO_FOOD; // default is looking for food
 
 	// Help/Reference
@@ -46,13 +47,10 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	// Preallocated temp variables (for speed I guess? I don't actually know)
 	timeSinceHome = 0.0f;
 	timeSinceFood = 0.0f;
-	tileX = 0, tileY = 0;
 	distanceToFood = 1000.0f;
 	distanceToHome = 1000.0f;
 	distanceX = 0, distanceY = 0.0f;
 	directionX = 0, directionY = 0.0f;
-	deltaX = 0, deltaY = 0.0f;
-	sampleCenterX = 0, sampleCenterY = 0;
 	currCellX = 0, currCellY = 0;
 	
 	totalStrength = 0.0f;
@@ -93,11 +91,14 @@ void Ant::updateAnt(PheromoneGrid& pheroGrid, std::vector<FoodSource>& foodList,
 	
 	
 	
-	// Sample pheromones and update heading accordingly
+	// Sample and calculate desired heading, and difference between desired + actual heading
 	desiredHeading = CalculatePheromoneFollowAngle(pheroGrid);
+	float headingDifference = (movementHeading - desiredHeading) * followStrength * deltaTime;
 
-	float headingDifference = (desiredHeading - movementHeading) * followStrength * deltaTime;
-	movementHeading += headingDifference;
+	// Normalize current heading before adding heading difference
+
+	movementHeading = fmod(movementHeading, (2.0f * 3.14f));
+	movementHeading -= headingDifference;
 	
 	// Lay a trail
 	LayTrail(pheroGrid);
@@ -196,36 +197,32 @@ void Ant::LayTrail(PheromoneGrid& pheroGrid)
 {
 	if (hasFood)
 	{
-		pheroGrid.layTrail(body.getPosition().x / pheroGrid.getResolution(), body.getPosition().y / pheroGrid.getResolution(), pheroType::TO_FOOD, std::max(maxPheroStrength - (timeSinceFood * fallOffMultiplier), 0.0f));
+		pheroGrid.layTrail(body.getPosition().x / pheroGrid.getResolution(), body.getPosition().y / pheroGrid.getResolution(), pheroType::TO_FOOD, std::max(maxPheroStrength - (timeSinceFood * fallOffMultiplier) + pheroGrid.getIntensity(seekingTrailType, body.getPosition().x / pheroGrid.getResolution(), body.getPosition().y / pheroGrid.getResolution()), 0.0f));
 	}
 	else
 	{
-		pheroGrid.layTrail(body.getPosition().x / pheroGrid.getResolution(), body.getPosition().y / pheroGrid.getResolution(), pheroType::TO_HOME, std::max(maxPheroStrength - (timeSinceHome * fallOffMultiplier), 0.0f));
+		pheroGrid.layTrail(body.getPosition().x / pheroGrid.getResolution(), body.getPosition().y / pheroGrid.getResolution(), pheroType::TO_HOME, std::max(maxPheroStrength - (timeSinceHome * fallOffMultiplier) + pheroGrid.getIntensity(seekingTrailType, body.getPosition().x / pheroGrid.getResolution(), body.getPosition().y / pheroGrid.getResolution()), 0.0f));
 	}
 }
 
 float Ant::CalculatePheromoneFollowAngle(PheromoneGrid& pheroGrid)
 {
-	// Get the cell that the ant is standing on
-	sampleCenterX = body.getPosition().x / resourceContainer.pheroResolution;
-	sampleCenterY = body.getPosition().y / resourceContainer.pheroResolution;
-
-	double sampleOrientation;
-	double sampleDistance;
-	double totalSampleStrength = 0;
-	double bestSampleStrength = 0;
+	float sampleOrientation;
+	float sampleDistance;
+	float totalSampleStrength = 0;
+	float bestSampleStrength = 0;
 	int bestAngle = 0;
 
 	for (int i = numSamples * -sampleTurnAngle; i <= sampleTurnAngle * numSamples; i += sampleTurnAngle)
 	{
 		// convert current angle (i) to radians
 		sampleOrientation = fmod((movementHeading + (i * 3.14 / 180.0)), (2.0 * 3.14));
-		sampleDistance = touchThreshold;
+		sampleDistance = maxSampleDistance;
 
-		double stepX = std::cos(sampleOrientation) * resourceContainer.pheroResolution;
-		double stepY = std::sin(sampleOrientation) * resourceContainer.pheroResolution;
-		double currentX = body.getPosition().x;
-		double currentY = body.getPosition().y;
+		float stepX = std::cos(sampleOrientation) * resourceContainer.pheroResolution;
+		float stepY = std::sin(sampleOrientation) * resourceContainer.pheroResolution;
+		float currentX = body.getPosition().x;
+		float currentY = body.getPosition().y;
 
 		totalSampleStrength = 0;
 
@@ -241,8 +238,6 @@ float Ant::CalculatePheromoneFollowAngle(PheromoneGrid& pheroGrid)
 
 			antSampleVision[0] = body.getPosition();
 			antSampleVision[1] = sf::Vector2f(currentX, currentY);
-
-			
 		}
 
 		if (totalSampleStrength > bestSampleStrength)

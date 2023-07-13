@@ -30,7 +30,7 @@ FoodSource::FoodSource()
 
 FoodSource::FoodSource(float x, float y)
 {
-	foodAmount = 300;
+	foodAmount = 3000;
 	Resources resourceContainer = Resources();
 	body.setOrigin(10,10);
 	body.setPosition(sf::Vector2f(x, y));

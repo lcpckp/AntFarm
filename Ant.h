@@ -40,6 +40,7 @@ private:
 	bool hasFood;
 	int sampleTurnAngle;
 	int numSamples;
+	float maxSampleDistance;
 	float ignoreThreshold;
 	float followStrength;
 	float turnSpeed;
@@ -50,11 +51,9 @@ private:
 	
 
 	// Predeclared temp variables
-	int tileX, tileY;
 	float distanceToFood, distanceToHome;
 	float distanceX, distanceY;
 	float directionX, directionY;
-	float deltaX, deltaY;
 	int sampleCenterX, sampleCenterY;
 	int currCellX, currCellY;
 	pheroType seekingTrailType;
