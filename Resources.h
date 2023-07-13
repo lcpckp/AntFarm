@@ -8,7 +8,7 @@ public:
 	~Resources();
 	const int farmWidth = 1400;
 	const int farmHeight = 900;
-	const int pheroResolution = 5;
+	const int pheroResolution = 4;
 	const int spawnClick = 50;
 
 	static sf::Font generalFont;

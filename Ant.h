@@ -39,6 +39,8 @@ private:
 	float maxPheroStrength;
 	bool hasFood;
 	int sampleTurnAngle;
+	int numSamples;
+	float ignoreThreshold;
 	float followStrength;
 	float turnSpeed;
 

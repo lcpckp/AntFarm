@@ -17,9 +17,9 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	hasFood = false;
 
 	// Movement Settings
-	movementSpeed = 50.0f;
+	movementSpeed = 44.0f;
 	movementHeading = (std::rand() / (RAND_MAX + 1.0f)) * 2 * 4 - 4;
-	movementRandomness = 0.075f;
+	movementRandomness = 0.1f;
 
 	// Thresholds
 	touchThreshold = 10.0f;
@@ -28,7 +28,9 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	// Trail laying/following settings
 	fallOffMultiplier = 2.0f; // How quickly their trail strength dies off as they move away from home or food
 	maxPheroStrength = 25.0f; // How much pheromone to lay down per tick
-	sampleTurnAngle = 30;
+	sampleTurnAngle = 10;
+	numSamples = 10;
+	ignoreThreshold = 5.0f;
 	followStrength = 1.0f; // How much to obey the pheromones
 	seekingTrailType = pheroType::TO_FOOD; // default is looking for food
 
@@ -214,7 +216,7 @@ float Ant::CalculatePheromoneFollowAngle(PheromoneGrid& pheroGrid)
 	double bestSampleStrength = 0;
 	int bestAngle = 0;
 
-	for (int i = 2 * -sampleTurnAngle; i <= sampleTurnAngle * 2; i += sampleTurnAngle)
+	for (int i = numSamples * -sampleTurnAngle; i <= sampleTurnAngle * numSamples; i += sampleTurnAngle)
 	{
 		// convert current angle (i) to radians
 		sampleOrientation = fmod((movementHeading + (i * 3.14 / 180.0)), (2.0 * 3.14));
@@ -250,9 +252,7 @@ float Ant::CalculatePheromoneFollowAngle(PheromoneGrid& pheroGrid)
 		}
 	}
 
-	std::cout << bestAngle << std::endl;
-
-	if (bestSampleStrength < 5)
+	if (bestSampleStrength < ignoreThreshold)
 	{
 		return movementHeading;
 	}
