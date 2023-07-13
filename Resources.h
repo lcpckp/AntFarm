@@ -6,9 +6,9 @@ class Resources
 public:
 	Resources();
 	~Resources();
-	const int farmWidth = 1400;
-	const int farmHeight = 900;
-	const int pheroResolution = 4;
+	const int farmWidth = 960;
+	const int farmHeight = 540;
+	const int pheroResolution = 3;
 	const int spawnClick = 50;
 
 	static sf::Font generalFont;
