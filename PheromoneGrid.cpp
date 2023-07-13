@@ -172,6 +172,13 @@ float PheromoneGrid::getFoodIntensity(int i)
 }
 float PheromoneGrid::getIntensity(pheroType type, int i)
 {
+	// If out of bounds, return 0 intensity
+	if (i < 0 || i > this->getSize())
+	{
+		return 0;
+	}
+
+	// Decide which grid to check, and get that intensity
 	switch (type)
 	{
 	case pheroType::TO_HOME:
@@ -183,7 +190,11 @@ float PheromoneGrid::getIntensity(pheroType type, int i)
 	default:
 		return 0;
 	}
-	return toHomeIntensity[i];
+}
+
+float PheromoneGrid::getIntensity(pheroType type, int x, int y)
+{
+	return getIntensity(type, y * width + x);
 }
 
 void PheromoneGrid::draw(sf::RenderTarget& target, sf::RenderStates states) const

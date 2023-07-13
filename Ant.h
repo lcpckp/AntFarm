@@ -38,8 +38,10 @@ private:
 	float fallOffMultiplier;
 	float maxPheroStrength;
 	bool hasFood;
-	int forwardSampleDistance;
-	int sideSampleDistance;
+	int sampleTurnAngle;
+	int numSamples;
+	float maxSampleDistance;
+	float sampleIgnoreThreshold;
 	float followStrength;
 	float turnSpeed;
 
@@ -49,11 +51,9 @@ private:
 	
 
 	// Predeclared temp variables
-	int tileX, tileY;
 	float distanceToFood, distanceToHome;
 	float distanceX, distanceY;
 	float directionX, directionY;
-	float deltaX, deltaY;
 	int sampleCenterX, sampleCenterY;
 	int currCellX, currCellY;
 	pheroType seekingTrailType;
