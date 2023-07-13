@@ -1,9 +1,10 @@
-Will add more of a description when it's fleshed out but here are the basic controls:
+# Ant Simulator
 
-Click - spawn ants - controlled by the spawnClick variable in Resources.h
+Right Click to create a food source (starts with 3000 food)
 
-Right click - spawn a food source
+Left Click to spawn 50 ants.
 
-Ant.cpp - the constructor contains a lot of the ants settings, they are set to bogus values right now for testing purposes
+Haven't implemented a lot of features yet so you need to spawn the ants starting on the home circle in the middle of the screen. Clicking elsewhere will lead the ants to the wrong destination.
 
-The ants don't follow the trails right now, but that's what I'm currently working on.
+Ant.cpp - the constructor contains a lot of the ants trail following and sampling settings.
+
