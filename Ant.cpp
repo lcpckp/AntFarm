@@ -24,14 +24,15 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	// Thresholds
 	touchThreshold = 10.0f;
 	sightThreshold = 50.0f;
+	sampleIgnoreThreshold = 2.0f;
 
 	// Trail laying/following settings
-	fallOffMultiplier = 4.0f; // How quickly their trail strength dies off as they move away from home or food
-	maxPheroStrength = 30.0f; // How much pheromone to lay down per tick
+	fallOffMultiplier = 1.0f; // How quickly their trail strength dies off as they move away from home or food
+	maxPheroStrength = 10.0f; // How much pheromone to lay down per tick
 	sampleTurnAngle = 5;
 	numSamples = 5;
 	maxSampleDistance = 15.0f;
-	ignoreThreshold = 10.0f;
+	
 	followStrength = 5.0f; // How much to obey the pheromones
 	seekingTrailType = pheroType::TO_FOOD; // default is looking for food
 
@@ -146,8 +147,7 @@ void Ant::TryDepositFood(std::vector<Home>& homeList)
 				hasFood = false;
 				timeSinceHome = 0.0f;
 				seekingTrailType = pheroType::TO_FOOD;
-				movementHeading += 3.14f;
-				body.setFillColor(sf::Color::Blue);
+				movementHeading += 3.14;
 			}
 		}
 		else if (distanceToHome < sightThreshold)
@@ -173,8 +173,7 @@ void Ant::TryGetFood(std::vector<FoodSource>& foodList)
 				hasFood = true;
 				timeSinceFood = 0.0f;
 				seekingTrailType = pheroType::TO_HOME;
-				movementHeading += 3.14f;
-				body.setFillColor(sf::Color::Green);
+				movementHeading += 3.14;
 			}
 		}
 		else if (distanceToFood < sightThreshold)
@@ -197,11 +196,11 @@ void Ant::LayTrail(PheromoneGrid& pheroGrid)
 {
 	if (hasFood)
 	{
-		pheroGrid.layTrail(body.getPosition().x / pheroGrid.getResolution(), body.getPosition().y / pheroGrid.getResolution(), pheroType::TO_FOOD, std::max(maxPheroStrength - (timeSinceFood * fallOffMultiplier) + pheroGrid.getIntensity(seekingTrailType, body.getPosition().x / pheroGrid.getResolution(), body.getPosition().y / pheroGrid.getResolution()), 0.0f));
+		pheroGrid.layTrail(body.getPosition().x / pheroGrid.getResolution(), body.getPosition().y / pheroGrid.getResolution(), pheroType::TO_FOOD, std::max(maxPheroStrength - (timeSinceFood * fallOffMultiplier), 0.0f));
 	}
 	else
 	{
-		pheroGrid.layTrail(body.getPosition().x / pheroGrid.getResolution(), body.getPosition().y / pheroGrid.getResolution(), pheroType::TO_HOME, std::max(maxPheroStrength - (timeSinceHome * fallOffMultiplier) + pheroGrid.getIntensity(seekingTrailType, body.getPosition().x / pheroGrid.getResolution(), body.getPosition().y / pheroGrid.getResolution()), 0.0f));
+		pheroGrid.layTrail(body.getPosition().x / pheroGrid.getResolution(), body.getPosition().y / pheroGrid.getResolution(), pheroType::TO_HOME, std::max(maxPheroStrength - (timeSinceHome * fallOffMultiplier), 0.0f));
 	}
 }
 
@@ -247,7 +246,7 @@ float Ant::CalculatePheromoneFollowAngle(PheromoneGrid& pheroGrid)
 		}
 	}
 
-	if (bestSampleStrength < ignoreThreshold)
+	if (bestSampleStrength < sampleIgnoreThreshold)
 	{
 		return movementHeading;
 	}

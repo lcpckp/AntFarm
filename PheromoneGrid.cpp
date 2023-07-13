@@ -18,7 +18,7 @@ PheromoneGrid::PheromoneGrid()
 	toHomeGridDrawable = sf::VertexArray(sf::PrimitiveType::Quads, numCells * 4);
 	toFoodGridDrawable = sf::VertexArray(sf::PrimitiveType::Quads, numCells * 4);
 
-	decayRate = 0.01f;
+	decayRate = 0.05f;
 
 	int x, y; // temp for upcoming quad index calculations
 

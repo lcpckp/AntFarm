@@ -41,7 +41,7 @@ private:
 	int sampleTurnAngle;
 	int numSamples;
 	float maxSampleDistance;
-	float ignoreThreshold;
+	float sampleIgnoreThreshold;
 	float followStrength;
 	float turnSpeed;
 
