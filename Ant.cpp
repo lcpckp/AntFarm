@@ -22,18 +22,18 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	movementRandomness = 0.075f;
 
 	// Thresholds
-	touchThreshold = 10.0f;
+	touchThreshold = 1.0f;
 	sightThreshold = 50.0f;
 	sampleIgnoreThreshold = 2.0f;
 
 	// Trail laying/following settings
 	fallOffMultiplier = 1.0f; // How quickly their trail strength dies off as they move away from home or food
 	maxPheroStrength = 10.0f; // How much pheromone to lay down per tick
-	sampleTurnAngle = 5;
-	numSamples = 5;
+	sampleTurnAngle = 3;
+	numSamples = 15;
 	maxSampleDistance = 15.0f;
 	
-	followStrength = 5.0f; // How much to obey the pheromones
+	followStrength = 8.0f; // How much to obey the pheromones
 	seekingTrailType = pheroType::TO_FOOD; // default is looking for food
 
 	// Help/Reference

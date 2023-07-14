@@ -7,7 +7,7 @@
 #include"FoodSource.h"
 
 
-
+bool drawTrails = true;
 void handleInput(sf::RenderWindow &window, std::vector<Ant> &antList, std::vector<FoodSource>& foodList, PheromoneGrid& pheroGrid, Resources& resourceContainer);
 void updateObjects(std::vector<Ant> &antList, PheromoneGrid &pheroGrid, std::vector<FoodSource>& foodList, std::vector<Home>& homeList, float deltaTime);
 void drawObjects(sf::RenderWindow &window, std::vector<Ant> &antList, PheromoneGrid &pheroGrid, std::vector<FoodSource>& foodList, std::vector<Home>& homeList);
@@ -26,6 +26,8 @@ int main()
     PheromoneGrid pheroGrid;
     std::vector<FoodSource> foodList;
     std::vector<Home> homeList;
+
+    
 
     homeList.push_back(Home(resourceContainer.farmWidth / 2, resourceContainer.farmHeight / 2));
 
@@ -73,6 +75,14 @@ void handleInput(sf::RenderWindow &window, std::vector<Ant> &antList, std::vecto
                     FoodSource newFoodSource = FoodSource(event.mouseButton.x, event.mouseButton.y);
                     foodList.push_back(newFoodSource);
                 }
+                break;
+            }
+            case sf::Event::KeyPressed:
+            {
+                if (event.key.code == sf::Keyboard::Space)
+                {
+                    drawTrails = !drawTrails;
+                }
             }
         }
     }
@@ -98,7 +108,16 @@ void drawObjects(sf::RenderWindow& window, std::vector<Ant>& antList, PheromoneG
     window.clear(sf::Color(254, 217, 155));
 
     // Draw Phero Grid
-    window.draw(pheroGrid);
+    if (drawTrails)
+    {
+        window.draw(pheroGrid);
+    }
+    
+    // Draw all ants
+    for (int i = 0; i < antList.size(); i++)
+    {
+        window.draw(antList[i]);
+    }
 
     // Draw Homes
     for (int i = 0; i < homeList.size(); i++)
@@ -112,11 +131,7 @@ void drawObjects(sf::RenderWindow& window, std::vector<Ant>& antList, PheromoneG
         window.draw(foodList[i]);
     }
 
-    // Draw all ants
-    for (int i = 0; i < antList.size(); i++)
-    {
-        window.draw(antList[i]);
-    }
+    
 
     // Finally, display drawn objects
     window.display();
