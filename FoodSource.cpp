@@ -43,7 +43,7 @@ FoodSource::FoodSource(float x, float y)
 	foodAmountText.setOutlineThickness(2);
 	foodAmountText.setString(std::to_string(foodAmount));
 	foodAmountText.setFont(Resources::generalFont);
-	foodAmountText.setCharacterSize(28);
+	foodAmountText.setCharacterSize(24);
 	foodAmountText.setOrigin(10, 10);
 
 }

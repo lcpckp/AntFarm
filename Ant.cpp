@@ -17,9 +17,9 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	hasFood = false;
 
 	// Movement Settings
-	movementSpeed = 44.0f;
+	movementSpeed = 45.0f;
 	movementHeading = (std::rand() / (RAND_MAX + 1.0f)) * 2 * 4 - 4;
-	movementRandomness = 0.075f;
+	movementRandomness = 0.25f;
 
 	// Thresholds
 	touchThreshold = 1.0f;
@@ -30,10 +30,10 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	fallOffMultiplier = 1.0f; // How quickly their trail strength dies off as they move away from home or food
 	maxPheroStrength = 10.0f; // How much pheromone to lay down per tick
 	sampleTurnAngle = 3;
-	numSamples = 15;
+	numSamples = 20;
 	maxSampleDistance = 15.0f;
 	
-	followStrength = 8.0f; // How much to obey the pheromones
+	followStrength = 6.0f; // How much to obey the pheromones
 	seekingTrailType = pheroType::TO_FOOD; // default is looking for food
 
 	// Help/Reference

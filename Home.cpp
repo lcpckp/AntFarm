@@ -16,7 +16,7 @@ Home::Home(int x, int y)
 	foodStoreText.setOutlineThickness(2);
 	foodStoreText.setString(std::to_string(foodStoreCount));
 	foodStoreText.setFont(Resources::generalFont);
-	foodStoreText.setCharacterSize(28);
+	foodStoreText.setCharacterSize(24);
 	foodStoreText.setOrigin(0, 0);
 }
 

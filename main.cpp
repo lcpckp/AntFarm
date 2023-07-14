@@ -28,8 +28,9 @@ int main()
     std::vector<Home> homeList;
 
     
-
-    homeList.push_back(Home(resourceContainer.farmWidth / 2, resourceContainer.farmHeight / 2));
+    // Temporary start conditions
+    homeList.push_back(Home(230, 150));
+    homeList.push_back(Home(800, 400));
 
     while (window.isOpen())
     {
@@ -90,15 +91,13 @@ void handleInput(sf::RenderWindow &window, std::vector<Ant> &antList, std::vecto
 
 void updateObjects(std::vector<Ant>& antList, PheromoneGrid &pheroGrid, std::vector<FoodSource>& foodList, std::vector<Home>& homeList, float deltaTime)
 {
-    // Preprocessing for ants
-
-
     // Each ant is processed
     for (int i = 0; i < antList.size(); i++)
     {
         antList[i].updateAnt(pheroGrid, foodList, homeList, deltaTime);
     }
 
+    // Grid is processed
     pheroGrid.update(deltaTime);
 }
 void drawObjects(sf::RenderWindow& window, std::vector<Ant>& antList, PheromoneGrid &pheroGrid, std::vector<FoodSource>& foodList, std::vector<Home>& homeList)
@@ -125,7 +124,7 @@ void drawObjects(sf::RenderWindow& window, std::vector<Ant>& antList, PheromoneG
         window.draw(homeList[i]);
     }
 
-    // Draw Food Source
+    // Draw Food Sources
     for (int i = 0; i < foodList.size(); i++)
     {
         window.draw(foodList[i]);
