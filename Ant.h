@@ -19,7 +19,7 @@ private:
 	// Functions
 	void TryGetFood(std::vector<FoodSource>& foodList);
 	void TryDepositFood(std::vector<Home>& homeList);
-	void LayTrail(PheromoneGrid& pheroGrid);
+	void LayTrail(PheromoneGrid& pheroGrid, float deltaTime);
 	float CalculatePheromoneFollowAngle(PheromoneGrid& pheroGrid);
 	float getRandomAngle();
 	void MovementTick(float deltaTime, PheromoneGrid& pheroGrid);

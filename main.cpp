@@ -29,8 +29,7 @@ int main()
 
     
     // Temporary start conditions
-    homeList.push_back(Home(230, 150));
-    homeList.push_back(Home(800, 400));
+    homeList.push_back(Home(resourceContainer.farmWidth / 2, resourceContainer.farmHeight / 2));
 
     while (window.isOpen())
     {

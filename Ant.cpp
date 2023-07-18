@@ -19,16 +19,16 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	// Movement Settings
 	movementSpeed = 45.0f;
 	movementHeading = (std::rand() / (RAND_MAX + 1.0f)) * 2 * 4 - 4;
-	movementRandomness = 0.25f;
+	movementRandomness = 0.15f;
 
 	// Thresholds
-	touchThreshold = 1.0f;
+	touchThreshold = 5.0f;
 	sightThreshold = 50.0f;
 	sampleIgnoreThreshold = 2.0f;
 
 	// Trail laying/following settings
-	fallOffMultiplier = 1.0f; // How quickly their trail strength dies off as they move away from home or food
-	maxPheroStrength = 10.0f; // How much pheromone to lay down per tick
+	fallOffMultiplier = 3.0f; // How quickly their trail strength dies off as they move away from home or food
+	maxPheroStrength = 150.0f; // How much pheromone to lay down per tick
 	sampleTurnAngle = 3;
 	numSamples = 20;
 	maxSampleDistance = 15.0f;
@@ -102,7 +102,7 @@ void Ant::updateAnt(PheromoneGrid& pheroGrid, std::vector<FoodSource>& foodList,
 	movementHeading -= headingDifference;
 	
 	// Lay a trail
-	LayTrail(pheroGrid);
+	LayTrail(pheroGrid, deltaTime);
 
 	// Adjust heading by small random amount
 	movementHeading += getRandomAngle();
@@ -124,7 +124,9 @@ void Ant::MovementTick(float deltaTime, PheromoneGrid& pheroGrid)
 	// Handle out of bounds ants (Reverse heading + recalculate new position)
 	if (body.getPosition().x > gridWidth || body.getPosition().y > gridHeight || body.getPosition().x < 0 || body.getPosition().y < 0)
 	{
-		movementHeading += 3.14f;
+		movementHeading += 3.14f; // Turn around
+		timeSinceHome += 5.0f; // Penalty to pheromones for hitting a wall
+		timeSinceFood += 5.0f; // Penalty to pheromones for hitting a wall
 		body.setPosition(sf::Vector2f((float)std::max(0, std::min((int)body.getPosition().x, gridWidth)), (float)std::max(0, std::min((int)body.getPosition().y, gridHeight))));
 	}
 }
@@ -192,15 +194,15 @@ void Ant::TryGetFood(std::vector<FoodSource>& foodList)
 		-If ant has food, lay down "to food" trails. Intensity is based on how long it's been since we've seen the food source, with a minimum of 0.
 		-If the ant has recently been home, lay down "to home" trails. This also falls off based on how long it's been since the ant was home.
 	*/
-void Ant::LayTrail(PheromoneGrid& pheroGrid)
+void Ant::LayTrail(PheromoneGrid& pheroGrid, float deltaTime)
 {
 	if (hasFood)
 	{
-		pheroGrid.layTrail(body.getPosition().x / pheroGrid.getResolution(), body.getPosition().y / pheroGrid.getResolution(), pheroType::TO_FOOD, std::max(maxPheroStrength - (timeSinceFood * fallOffMultiplier), 0.0f));
+		pheroGrid.layTrail(body.getPosition().x / pheroGrid.getResolution(), body.getPosition().y / pheroGrid.getResolution(), pheroType::TO_FOOD, std::max((maxPheroStrength - (timeSinceFood * fallOffMultiplier)) * deltaTime, 0.0f));
 	}
 	else
 	{
-		pheroGrid.layTrail(body.getPosition().x / pheroGrid.getResolution(), body.getPosition().y / pheroGrid.getResolution(), pheroType::TO_HOME, std::max(maxPheroStrength - (timeSinceHome * fallOffMultiplier), 0.0f));
+		pheroGrid.layTrail(body.getPosition().x / pheroGrid.getResolution(), body.getPosition().y / pheroGrid.getResolution(), pheroType::TO_HOME, std::max((maxPheroStrength - (timeSinceHome * fallOffMultiplier)) * deltaTime, 0.0f));
 	}
 }
 
