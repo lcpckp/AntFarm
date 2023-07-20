@@ -10,11 +10,11 @@ public:
 	
 	std::pair<float, float> getPosition();
 	bool takeFood();
+	bool hasFood();
 	
 private:
 	// Utility
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-	Resources resourceContainer;
 
 	// Properties
 	int foodAmount;

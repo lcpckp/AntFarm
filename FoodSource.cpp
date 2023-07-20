@@ -17,6 +17,11 @@ bool FoodSource::takeFood()
 	return false;
 }
 
+bool FoodSource::hasFood()
+{
+	return foodAmount > 0;
+}
+
 void FoodSource::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.draw(body);
@@ -31,10 +36,9 @@ FoodSource::FoodSource()
 FoodSource::FoodSource(float x, float y)
 {
 	foodAmount = 3000;
-	Resources resourceContainer = Resources();
 	body.setOrigin(10,10);
 	body.setPosition(sf::Vector2f(x, y));
-	body.setFillColor(resourceContainer.foodColor);
+	body.setFillColor(Resources::foodColor);
 	body.setRadius(10.0f);
 
 	foodAmountText.setPosition(sf::Vector2f(x, y));

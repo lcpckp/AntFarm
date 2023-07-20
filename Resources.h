@@ -1,26 +1,30 @@
 #pragma once
 #include<SFML/Graphics.hpp>
 
+
+
 class Resources
 {
 public:
 	Resources();
 	~Resources();
-	const int farmWidth = 960;
-	const int farmHeight = 540; 
-	const int pheroResolution = 3;
-	const int spawnClick = 10;
+	static const int farmWidth = 960;
+	static const int farmHeight = 540; 
+	static const int pheroResolution = 3;
+	static const int spawnClick = 10;
+
+	static float antBodyRadius;
 
 	static sf::Font generalFont;
 
-	const sf::Color groundColor = sf::Color(254, 217, 155);
-	const sf::Color antColor = sf::Color(31, 32, 65);
-	const sf::Color homeTrailColor = sf::Color(91, 133, 170, 0);
-	const sf::Color foodTrailColor = sf::Color(171, 225, 136, 0);
-	const sf::Color enemyTrailColor = sf::Color(226, 181, 146, 0);
-	const sf::Color homeColor = sf::Color(81, 123, 160);
-	const sf::Color foodColor = sf::Color(161, 215, 126);
-	const sf::Color enemyColor = sf::Color(216, 171, 136);
+	static sf::Color groundColor;
+	static sf::Color antColor;
+	static sf::Color homeTrailColor;
+	static sf::Color foodTrailColor;
+	static sf::Color enemyTrailColor;
+	static sf::Color homeColor;
+	static sf::Color foodColor;
+	static sf::Color enemyColor;
 private:
 	
 };

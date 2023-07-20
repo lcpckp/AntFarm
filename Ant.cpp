@@ -10,30 +10,29 @@
 Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 {
 	// Ant properties
-	body.setOrigin(2, 2);
+	body.setOrigin(Resources::antBodyRadius, Resources::antBodyRadius);
 	body.setPosition(x, y);
-	body.setRadius(2);
-	body.setFillColor(resourceContainer.antColor);
+	body.setRadius(Resources::antBodyRadius);
+	body.setFillColor(Resources::antColor);
 	hasFood = false;
 
 	// Movement Settings
 	movementSpeed = 45.0f;
 	movementHeading = (std::rand() / (RAND_MAX + 1.0f)) * 2 * 4 - 4;
-	movementRandomness = 0.15f;
-
-	// Thresholds
+	movementRandomness = 0.125f;
 	touchThreshold = 5.0f;
 	sightThreshold = 50.0f;
-	sampleIgnoreThreshold = 2.0f;
 
-	// Trail laying/following settings
-	fallOffMultiplier = 3.0f; // How quickly their trail strength dies off as they move away from home or food
-	maxPheroStrength = 150.0f; // How much pheromone to lay down per tick
+	// Pheromone Sampling
 	sampleTurnAngle = 3;
-	numSamples = 20;
+	sampleCount = 15;
 	maxSampleDistance = 15.0f;
-	
-	followStrength = 6.0f; // How much to obey the pheromones
+	sampleIgnoreThreshold = 1.0f;
+
+	// Trail laying
+	fallOffMultiplier = 5.0f; // How quickly their trail strength dies off as they move away from home or food
+	maxPheroStrength = 200.0f; // How much pheromone to lay down per tick
+	followStrength = 5.0f; // How much to obey the pheromones
 	seekingTrailType = pheroType::TO_FOOD; // default is looking for food
 
 	// Help/Reference
@@ -44,22 +43,6 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	// Debug stuff
 	antSampleVision = sf::VertexArray(sf::Lines, 2);
 	visionOptions = false;
-	
-	// Preallocated temp variables (for speed I guess? I don't actually know)
-	timeSinceHome = 0.0f;
-	timeSinceFood = 0.0f;
-	distanceToFood = 1000.0f;
-	distanceToHome = 1000.0f;
-	distanceX = 0, distanceY = 0.0f;
-	directionX = 0, directionY = 0.0f;
-	currCellX = 0, currCellY = 0;
-	
-	totalStrength = 0.0f;
-	maxStrength = 0.0f;
-	index = 0;
-	turningAngle = 0.0f;
-
-	
 }
 
 Ant::~Ant()
@@ -140,7 +123,7 @@ void Ant::TryDepositFood(std::vector<Home>& homeList)
 {
 	for (int i = 0; i < homeList.size(); i++)
 	{
-		distanceToHome = std::sqrt(std::pow(body.getPosition().x - homeList[i].getPosition().first, 2) + std::pow(body.getPosition().y - homeList[i].getPosition().second, 2));
+		float distanceToHome = std::sqrt(std::pow(body.getPosition().x - homeList[i].getPosition().first, 2) + std::pow(body.getPosition().y - homeList[i].getPosition().second, 2));
 
 		if (distanceToHome < touchThreshold)
 		{
@@ -154,8 +137,8 @@ void Ant::TryDepositFood(std::vector<Home>& homeList)
 		}
 		else if (distanceToHome < sightThreshold)
 		{
-			distanceX = homeList[i].getPosition().first - body.getPosition().x;
-			distanceY = homeList[i].getPosition().second - body.getPosition().y;
+			float distanceX = homeList[i].getPosition().first - body.getPosition().x;
+			float distanceY = homeList[i].getPosition().second - body.getPosition().y;
 			movementHeading = std::atan2(distanceY, distanceX);
 		}
 	}
@@ -166,7 +149,7 @@ void Ant::TryGetFood(std::vector<FoodSource>& foodList)
 	
 	for (int i = 0; i < foodList.size(); i++)
 	{
-		distanceToFood = std::sqrt(std::pow(body.getPosition().x - foodList[i].getPosition().first, 2) + std::pow(body.getPosition().y - foodList[i].getPosition().second, 2));
+		float distanceToFood = std::sqrt(std::pow(body.getPosition().x - foodList[i].getPosition().first, 2) + std::pow(body.getPosition().y - foodList[i].getPosition().second, 2));
 
 		if (distanceToFood < touchThreshold)
 		{
@@ -178,28 +161,24 @@ void Ant::TryGetFood(std::vector<FoodSource>& foodList)
 				movementHeading += 3.14;
 			}
 		}
-		else if (distanceToFood < sightThreshold)
+		else if (distanceToFood < sightThreshold && foodList[i].hasFood())
 		{
-			distanceX = foodList[i].getPosition().first - body.getPosition().x;
-			distanceY = foodList[i].getPosition().second - body.getPosition().y;
+			float distanceX = foodList[i].getPosition().first - body.getPosition().x;
+			float distanceY = foodList[i].getPosition().second - body.getPosition().y;
 			movementHeading = std::atan2(distanceY, distanceX);
 		}
 	}
 	
 }
 
-/*
-		Lay trail based on ant's goals (calculates tile x and y based on body's position x and y)
-
-		-If ant has food, lay down "to food" trails. Intensity is based on how long it's been since we've seen the food source, with a minimum of 0.
-		-If the ant has recently been home, lay down "to home" trails. This also falls off based on how long it's been since the ant was home.
-	*/
 void Ant::LayTrail(PheromoneGrid& pheroGrid, float deltaTime)
 {
+	// If ant has food, lay a "to Food" trail at decreasing strength based on the time it's been since it found food.
 	if (hasFood)
 	{
 		pheroGrid.layTrail(body.getPosition().x / pheroGrid.getResolution(), body.getPosition().y / pheroGrid.getResolution(), pheroType::TO_FOOD, std::max((maxPheroStrength - (timeSinceFood * fallOffMultiplier)) * deltaTime, 0.0f));
 	}
+	// Otherwise, do the same thing with a "to Home" trail.
 	else
 	{
 		pheroGrid.layTrail(body.getPosition().x / pheroGrid.getResolution(), body.getPosition().y / pheroGrid.getResolution(), pheroType::TO_HOME, std::max((maxPheroStrength - (timeSinceHome * fallOffMultiplier)) * deltaTime, 0.0f));
@@ -208,39 +187,50 @@ void Ant::LayTrail(PheromoneGrid& pheroGrid, float deltaTime)
 
 float Ant::CalculatePheromoneFollowAngle(PheromoneGrid& pheroGrid)
 {
-	float sampleOrientation;
-	float sampleDistance;
-	float totalSampleStrength = 0;
 	float bestSampleStrength = 0;
 	int bestAngle = 0;
 
-	for (int i = numSamples * -sampleTurnAngle; i <= sampleTurnAngle * numSamples; i += sampleTurnAngle)
-	{
-		// convert current angle (i) to radians
-		sampleOrientation = fmod((movementHeading + (i * 3.14 / 180.0)), (2.0 * 3.14));
-		sampleDistance = maxSampleDistance;
+	// This sampling loop is based on two settings: sampleCount and sampleTurnAngle.
+	// sampleCount is the number of sample raycasts to do per side (left and right)
+	// sampleTurnAngle is the angle in degrees of each sample.
+	// The loop begins at the farthest negative turn and ends at the farthest positive turn, incrementing by the sampleTurnAngle each time.
 
-		float stepX = std::cos(sampleOrientation) * resourceContainer.pheroResolution;
-		float stepY = std::sin(sampleOrientation) * resourceContainer.pheroResolution;
+	for (int i = sampleCount * -sampleTurnAngle; i <= sampleTurnAngle * sampleCount; i += sampleTurnAngle)
+	{
+		// reset sampleDistance to max value (decreases to 0 as part of sampling)
+		float sampleDistance = maxSampleDistance;
+
+		// reset totalSampleStrength to 0 to accumulate current sample
+		float totalSampleStrength = 0;
+
+		// get actual sample angle by adding current sampleAngle to the current heading of the ant.
+		float sampleOrientation = fmod((movementHeading + (i * 3.14 / 180.0)), (2.0 * 3.14));
+
+		// calculate the x and y steps for sampling based on the current orientation
+		float stepX = std::cos(sampleOrientation) * Resources::pheroResolution;
+		float stepY = std::sin(sampleOrientation) * Resources::pheroResolution;
+
+		// start currentX and currentY at the current position of the ant
 		float currentX = body.getPosition().x;
 		float currentY = body.getPosition().y;
-
-		totalSampleStrength = 0;
-
-		while (sampleDistance >= 0) {
-			currCellX = std::round(currentX) / resourceContainer.pheroResolution;
-			currCellY = std::round(currentY) / resourceContainer.pheroResolution;
+		
+		// Samples various points at decreasing distances until it reaches 0
+		while (sampleDistance >= 0)
+		{
+			// get the X and Y of the current cell we are sampling
+			int currCellX = std::round(currentX) / Resources::pheroResolution;
+			int currCellY = std::round(currentY) / Resources::pheroResolution;
 			
+			// add the strength from the cell to the accumulator
 			totalSampleStrength += pheroGrid.getIntensity(seekingTrailType, currCellX, currCellY);
 
+			// increment the current position by the step values
 			currentX += stepX;
 			currentY += stepY;
-			sampleDistance -= resourceContainer.pheroResolution;
-
-			antSampleVision[0] = body.getPosition();
-			antSampleVision[1] = sf::Vector2f(currentX, currentY);
+			sampleDistance -= Resources::pheroResolution;
 		}
 
+		// if this sample is the best so far, save that information to the best variables
 		if (totalSampleStrength > bestSampleStrength)
 		{
 			bestSampleStrength = totalSampleStrength;
@@ -248,15 +238,16 @@ float Ant::CalculatePheromoneFollowAngle(PheromoneGrid& pheroGrid)
 		}
 	}
 
+	// if the best sample we found was too weak, ignore it.
 	if (bestSampleStrength < sampleIgnoreThreshold)
 	{
 		return movementHeading;
 	}
+	// otherwise, return the bestAngle converted to radians, added to our current movement heading to give the correct desired heading.
 	else
 	{
 		return fmod((movementHeading + (bestAngle * 3.14 / 180.0)), (2.0 * 3.14));
 	}
-	
 }
 
 

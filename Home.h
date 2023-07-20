@@ -13,8 +13,6 @@ public:
 private:
 	// Utility
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-	Resources resourceContainer;
-	//Ant spawnAnt(std::vector<Ant> antList);
 
 	// Properties
 	int foodStoreCount;

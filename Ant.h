@@ -14,7 +14,6 @@ public:
 private:
 	// Utility
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-	Resources resourceContainer;
 
 	// Functions
 	void TryGetFood(std::vector<FoodSource>& foodList);
@@ -38,29 +37,21 @@ private:
 	float maxPheroStrength;
 	bool hasFood;
 	int sampleTurnAngle;
-	int numSamples;
+	int sampleCount;
 	float maxSampleDistance;
 	float sampleIgnoreThreshold;
 	float followStrength;
 	float turnSpeed;
+	pheroType seekingTrailType;
+
+	int gridWidth, gridHeight;
+	int gridSize;
 
 	// Dev Properties
 	sf::VertexArray antSampleVision;
 	bool visionOptions;
-	
 
-	// Predeclared temp variables
-	float distanceToFood, distanceToHome;
-	float distanceX, distanceY;
-	float directionX, directionY;
-	int sampleCenterX, sampleCenterY;
+	// I'm having to declare these here for some reason even though they are only used in temporary calculations later
 	int currCellX, currCellY;
-	pheroType seekingTrailType;
-	float totalStrength;
-	float maxStrength;
-	int index;
-	float turningAngle;
-	int gridWidth, gridHeight;
-	int gridSize;
 };
 

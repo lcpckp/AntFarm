@@ -3,12 +3,11 @@
 
 Home::Home(int x, int y)
 {
-	Resources resourceContainer = Resources();
 	foodStoreCount = 0;
 	body.setOrigin(20, 20);
 	body.setPosition(sf::Vector2f(x, y));
 	body.setRadius(20.0f);
-	body.setFillColor(resourceContainer.homeColor);
+	body.setFillColor(Resources::homeColor);
 
 	foodStoreText.setPosition(sf::Vector2f(x, y));
 	foodStoreText.setFillColor(sf::Color::White);

@@ -4,58 +4,58 @@
 
 PheromoneGrid::PheromoneGrid()
 {
-	// Get resources container
-	Resources resourceContainer = Resources();
 	// Get dimensions from resource container
-	height = resourceContainer.farmHeight;
-	width = resourceContainer.farmWidth;
+	height = Resources::farmHeight;
+	width = Resources::farmWidth;
 	numCells = height * width;
-	pheroResolution = resourceContainer.pheroResolution;
+	pheroResolution = Resources::pheroResolution;
 
-	quadColor = resourceContainer.groundColor;
+	// Pherogrid Settings
+	maxPheroPerCell = 255;
+	decayRate = 0.1f;
 
 	// Instantiate grid data + grid drawable
 	toHomeGridDrawable = sf::VertexArray(sf::PrimitiveType::Quads, numCells * 4);
 	toFoodGridDrawable = sf::VertexArray(sf::PrimitiveType::Quads, numCells * 4);
+	quadColor = Resources::groundColor;
+	
+	int x, y, quadIndex; // temp for upcoming quad index calculations
+	
 
-	decayRate = 0.05f;
-
-	int x, y; // temp for upcoming quad index calculations
-
+	// Loop through every cell and initialize vertex arrays
 	for (int i = 0; i < numCells; i++)
 	{
+		// Fill each grid cell with empty cells
 		toHomeIntensity.push_back(0.0f);
 		toFoodIntensity.push_back(0.0f);
 
 		// Calculate tile position in x, y from the width + index, then calculate the quad index for use in the vertex array
 		x = i % width;
 		y = i / width;
-		int quadIndex = i * 4;
+		quadIndex = i * 4;
 
-		// toHome Grid positions
+		// set toHome Grid vertex positions
 		toHomeGridDrawable[quadIndex].position = sf::Vector2f(x * pheroResolution, y * pheroResolution);
 		toHomeGridDrawable[quadIndex + 1].position = sf::Vector2f((x + 1) * pheroResolution, y * pheroResolution);
 		toHomeGridDrawable[quadIndex + 2].position = sf::Vector2f((x + 1) * pheroResolution, (y + 1) * pheroResolution);
 		toHomeGridDrawable[quadIndex + 3].position = sf::Vector2f(x * pheroResolution, (y + 1) * pheroResolution);
-		// toHome color
-		toHomeGridDrawable[quadIndex].color = resourceContainer.homeTrailColor;
-		toHomeGridDrawable[quadIndex + 1].color = resourceContainer.homeTrailColor;
-		toHomeGridDrawable[quadIndex + 2].color = resourceContainer.homeTrailColor;
-		toHomeGridDrawable[quadIndex + 3].color = resourceContainer.homeTrailColor;
+		// set toHome color
+		toHomeGridDrawable[quadIndex].color = Resources::homeTrailColor;
+		toHomeGridDrawable[quadIndex + 1].color = Resources::homeTrailColor;
+		toHomeGridDrawable[quadIndex + 2].color = Resources::homeTrailColor;
+		toHomeGridDrawable[quadIndex + 3].color = Resources::homeTrailColor;
 
-		// toFood Grid positions
+		// set toFood Grid vertex positions
 		toFoodGridDrawable[quadIndex].position = sf::Vector2f(x * pheroResolution, y * pheroResolution);
 		toFoodGridDrawable[quadIndex + 1].position = sf::Vector2f((x + 1) * pheroResolution, y * pheroResolution);
 		toFoodGridDrawable[quadIndex + 2].position = sf::Vector2f((x + 1) * pheroResolution, (y + 1) * pheroResolution);
 		toFoodGridDrawable[quadIndex + 3].position = sf::Vector2f(x * pheroResolution, (y + 1) * pheroResolution);
-		// toFood color
-		toFoodGridDrawable[quadIndex].color = resourceContainer.foodTrailColor;
-		toFoodGridDrawable[quadIndex + 1].color = resourceContainer.foodTrailColor;
-		toFoodGridDrawable[quadIndex + 2].color = resourceContainer.foodTrailColor;
-		toFoodGridDrawable[quadIndex + 3].color = resourceContainer.foodTrailColor;
+		// set toFood color
+		toFoodGridDrawable[quadIndex].color = Resources::foodTrailColor;
+		toFoodGridDrawable[quadIndex + 1].color = Resources::foodTrailColor;
+		toFoodGridDrawable[quadIndex + 2].color = Resources::foodTrailColor;
+		toFoodGridDrawable[quadIndex + 3].color = Resources::foodTrailColor;
 	}
-
-	std::cout << "[DEBUG] Empty Pheromone Grid Initialized" << std::endl;
 }
 
 PheromoneGrid::~PheromoneGrid()
@@ -78,81 +78,69 @@ int PheromoneGrid::getHeight()
 	return height;
 }
 
-/*
-	layTrail(int x, int y, pheroType type)
-
-	-Calculates the quadIndex to access the tile at x, y's vertices.
-	-Picks the correct color based on type parameter.
-	-Updates the quads color + intensity (calculates the correct index for the pheroGrid vector using x and y)
-	-Intensity can be 0-255
-*/
-
 void PheromoneGrid::layTrail(int x, int y, pheroType type, float intensity)
 {
 	gridIndex = y * width + x;
-	
+
 	switch (type)
 	{
 	case pheroType::TO_HOME:
 		toHomeIntensity[gridIndex] += intensity;
-		if (toHomeIntensity[gridIndex] > 255)
-			toHomeIntensity[gridIndex] = 255;
+		if (toHomeIntensity[gridIndex] > maxPheroPerCell)
+			toHomeIntensity[gridIndex] = maxPheroPerCell;
 		break;
 	case pheroType::TO_FOOD:
 		toFoodIntensity[gridIndex] += intensity;
-		if (toFoodIntensity[gridIndex] > 255)
-			toFoodIntensity[gridIndex] = 255;
+		if (toFoodIntensity[gridIndex] > maxPheroPerCell)
+			toFoodIntensity[gridIndex] = maxPheroPerCell;
 		break;
 	case pheroType::TO_ENEMY:
 		break;
 	default:
 		break;
 	}
-
-	
-
-	
-	
-
 }
 
-/*
-	update(float deltaTime)
+void PheromoneGrid::updateHomeQuad(int i)
+{
+	int j = i * 4;
+	toHomeGridDrawable[j].color.a = toHomeIntensity[i];
+	toHomeGridDrawable[j + 1].color.a = toHomeIntensity[i];
+	toHomeGridDrawable[j + 2].color.a = toHomeIntensity[i];
+	toHomeGridDrawable[j + 3].color.a = toHomeIntensity[i];
+}
 
-	-Loops through every cell, if no pheromones to update then it simply moves on to the next cell.
-	-On cells with pheromones, it decays by some rate, snapping to 0 if under 1/255 intensity.
-	-Then it finds the quadIndex for the cell based on the index, and updates the color's alpha to the new intensity value
-*/
+void PheromoneGrid::updateFoodQuad(int i)
+{
+	int j = i * 4;
+	toFoodGridDrawable[j].color.a = toFoodIntensity[i];
+	toFoodGridDrawable[j + 1].color.a = toFoodIntensity[i];
+	toFoodGridDrawable[j + 2].color.a = toFoodIntensity[i];
+	toFoodGridDrawable[j + 3].color.a = toFoodIntensity[i];
+}
 
 void PheromoneGrid::update(float deltaTime)
 {
-	for (int i = 0; i < numCells; i++)
+	// Run for each cell
+	for (int i = 0; i < numCells; i++) 
 	{
-		if (toHomeIntensity[i] > 0 || toFoodIntensity[i] > 0)
+		// If there is some level of pheromone present
+		if (toHomeIntensity[i] > 0 || toFoodIntensity[i] > 0) 
 		{
-			toFoodIntensity[i] *= (1.0f - decayRate * deltaTime);
-			toHomeIntensity[i] *= (1.0f - decayRate * deltaTime);
+			// Decay food and home pheromones by the decay rate per second
+			toFoodIntensity[i] *= std::pow((1 - decayRate), deltaTime); 
+			toHomeIntensity[i] *= std::pow((1 - decayRate), deltaTime);
 
-			if (toHomeIntensity[i] + toFoodIntensity[i] < 1.0f)
+			// If the pheromone level is less than 0.25, snap the value down to 0.0
+			if (toHomeIntensity[i] + toFoodIntensity[i] < 0.25f) 
 			{
-				toHomeIntensity[i] = 0;
-				toFoodIntensity[i] = 0;
+				toHomeIntensity[i] = 0.0f;
+				toFoodIntensity[i] = 0.0f;
 			}
 			
-			cellX = i % width;
-			cellY = i / width;
-			
-			quadIndex = (cellX + cellY * width) * 4;
-
-			toHomeGridDrawable[quadIndex].color.a = toHomeIntensity[i];
-			toHomeGridDrawable[quadIndex + 1].color.a = toHomeIntensity[i];
-			toHomeGridDrawable[quadIndex + 2].color.a = toHomeIntensity[i];
-			toHomeGridDrawable[quadIndex + 3].color.a = toHomeIntensity[i];
-
-			toFoodGridDrawable[quadIndex].color.a = toFoodIntensity[i];
-			toFoodGridDrawable[quadIndex + 1].color.a = toFoodIntensity[i];
-			toFoodGridDrawable[quadIndex + 2].color.a = toFoodIntensity[i];
-			toFoodGridDrawable[quadIndex + 3].color.a = toFoodIntensity[i];
+			// Update the drawable quads with the new intensity value
+			updateHomeQuad(i);
+			updateFoodQuad(i);
 		}
 	}
 }
@@ -173,12 +161,12 @@ float PheromoneGrid::getFoodIntensity(int i)
 float PheromoneGrid::getIntensity(pheroType type, int i)
 {
 	// If out of bounds, return 0 intensity
-	if (i < 0 || i > this->getSize())
+	if (i < 0 || i > getSize())
 	{
 		return 0;
 	}
 
-	// Decide which grid to check, and get that intensity
+	// Pick grid based on type, and return intensity
 	switch (type)
 	{
 	case pheroType::TO_HOME:
