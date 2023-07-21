@@ -195,6 +195,9 @@ float Ant::CalculatePheromoneFollowAngle(PheromoneGrid& pheroGrid)
 	// sampleTurnAngle is the angle in degrees of each sample.
 	// The loop begins at the farthest negative turn and ends at the farthest positive turn, incrementing by the sampleTurnAngle each time.
 
+	// In each iteration/sample, we start at the x, y location of the ant, and step out at some angle (determined by the iteration) until we reach the maxSampleDistance
+	// The total amount of pheromone sample is calculated, and the best sample + angle are stored.
+
 	for (int i = sampleCount * -sampleTurnAngle; i <= sampleTurnAngle * sampleCount; i += sampleTurnAngle)
 	{
 		// reset sampleDistance to max value (decreases to 0 as part of sampling)
@@ -210,14 +213,14 @@ float Ant::CalculatePheromoneFollowAngle(PheromoneGrid& pheroGrid)
 		float stepX = std::cos(sampleOrientation) * Resources::pheroResolution;
 		float stepY = std::sin(sampleOrientation) * Resources::pheroResolution;
 
-		// start currentX and currentY at the current position of the ant
+		// currentX and currentY keep track of the current sample position.
 		float currentX = body.getPosition().x;
 		float currentY = body.getPosition().y;
 		
 		// Samples various points at decreasing distances until it reaches 0
 		while (sampleDistance >= 0)
 		{
-			// get the X and Y of the current cell we are sampling
+			// translate current position to current grid cell
 			int currCellX = std::round(currentX) / Resources::pheroResolution;
 			int currCellY = std::round(currentY) / Resources::pheroResolution;
 			
