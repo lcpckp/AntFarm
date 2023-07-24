@@ -17,7 +17,7 @@ int main()
     // Set up resource container (contains general settings + textures), render window from SFML, and clock for deltaTime for framerate independence
     Resources resourceContainer = Resources();
     sf::RenderWindow window(sf::VideoMode(resourceContainer.farmWidth, resourceContainer.farmHeight), "Ant Farm");
-    window.setFramerateLimit(120);
+    window.setFramerateLimit(60);
     sf::Clock clock;
     float deltaTime = 0.0f;
 

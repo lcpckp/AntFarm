@@ -11,7 +11,7 @@ PheromoneGrid::PheromoneGrid()
 	pheroResolution = Resources::pheroResolution;
 
 	// Pherogrid Settings
-	maxPheroPerCell = 255;
+	maxPheroPerCell = 1000;
 	decayRate = 0.1f;
 
 	// Instantiate grid data + grid drawable
@@ -104,19 +104,21 @@ void PheromoneGrid::layTrail(int x, int y, pheroType type, float intensity)
 void PheromoneGrid::updateHomeQuad(int i)
 {
 	int j = i * 4;
-	toHomeGridDrawable[j].color.a = toHomeIntensity[i];
-	toHomeGridDrawable[j + 1].color.a = toHomeIntensity[i];
-	toHomeGridDrawable[j + 2].color.a = toHomeIntensity[i];
-	toHomeGridDrawable[j + 3].color.a = toHomeIntensity[i];
+	int newIntensity = std::min(255.0f, toHomeIntensity[i]);
+	toHomeGridDrawable[j].color.a = newIntensity;
+	toHomeGridDrawable[j + 1].color.a = newIntensity;
+	toHomeGridDrawable[j + 2].color.a = newIntensity;
+	toHomeGridDrawable[j + 3].color.a = newIntensity;
 }
 
 void PheromoneGrid::updateFoodQuad(int i)
 {
 	int j = i * 4;
-	toFoodGridDrawable[j].color.a = toFoodIntensity[i];
-	toFoodGridDrawable[j + 1].color.a = toFoodIntensity[i];
-	toFoodGridDrawable[j + 2].color.a = toFoodIntensity[i];
-	toFoodGridDrawable[j + 3].color.a = toFoodIntensity[i];
+	int newIntensity = std::min(255.0f, toFoodIntensity[i]);
+	toFoodGridDrawable[j].color.a = newIntensity;
+	toFoodGridDrawable[j + 1].color.a = newIntensity;
+	toFoodGridDrawable[j + 2].color.a = newIntensity;
+	toFoodGridDrawable[j + 3].color.a = newIntensity;
 }
 
 void PheromoneGrid::update(float deltaTime)

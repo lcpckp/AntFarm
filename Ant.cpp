@@ -19,7 +19,7 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	// Movement Settings
 	movementSpeed = 45.0f;
 	movementHeading = (std::rand() / (RAND_MAX + 1.0f)) * 2 * 4 - 4;
-	movementRandomness = 0.125f;
+	movementRandomness = 0.15f;
 	touchThreshold = 5.0f;
 	sightThreshold = 50.0f;
 
@@ -32,8 +32,10 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	// Trail laying
 	fallOffMultiplier = 5.0f; // How quickly their trail strength dies off as they move away from home or food
 	maxPheroStrength = 200.0f; // How much pheromone to lay down per tick
-	followStrength = 5.0f; // How much to obey the pheromones
+	followStrength = 4.0f; // How much to obey the pheromones
 	seekingTrailType = pheroType::TO_FOOD; // default is looking for food
+	timeSinceHome = 100.0f;
+	timeSinceFood = 100.0f;
 
 	// Help/Reference
 	gridWidth = pheroGrid.getWidth();
@@ -176,6 +178,7 @@ void Ant::LayTrail(PheromoneGrid& pheroGrid, float deltaTime)
 	// If ant has food, lay a "to Food" trail at decreasing strength based on the time it's been since it found food.
 	if (hasFood)
 	{
+
 		pheroGrid.layTrail(body.getPosition().x / pheroGrid.getResolution(), body.getPosition().y / pheroGrid.getResolution(), pheroType::TO_FOOD, std::max((maxPheroStrength - (timeSinceFood * fallOffMultiplier)) * deltaTime, 0.0f));
 	}
 	// Otherwise, do the same thing with a "to Home" trail.

@@ -11,7 +11,7 @@ public:
 	static const int farmWidth = 960;
 	static const int farmHeight = 540; 
 	static const int pheroResolution = 3;
-	static const int spawnClick = 10;
+	static const int spawnClick = 200;
 
 	static float antBodyRadius;
 
