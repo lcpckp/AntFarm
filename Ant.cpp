@@ -36,6 +36,7 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	seekingTrailType = pheroType::TO_FOOD; // default is looking for food
 	timeSinceHome = 100.0f;
 	timeSinceFood = 100.0f;
+	lifetime = 0.0f;
 
 	// Help/Reference
 	gridWidth = pheroGrid.getWidth();
@@ -67,6 +68,8 @@ void Ant::updateAnt(PheromoneGrid& pheroGrid, std::vector<FoodSource>& foodList,
 	// Add elapsed time to timeSinceHome/Food counters
 	timeSinceHome += deltaTime;
 	timeSinceFood += deltaTime; //might be able to just have one but will need two if they can do two trails at once
+	lifetime += deltaTime;
+	
 
 	// Check if we can grab or see a food source
 	// Also updates heading directly to food source if within sight threshold
@@ -95,6 +98,11 @@ void Ant::updateAnt(PheromoneGrid& pheroGrid, std::vector<FoodSource>& foodList,
 	// Process the movement of the ant
 	MovementTick(deltaTime, pheroGrid);
 	
+}
+
+float Ant::getLifetime()
+{
+	return lifetime;
 }
 
 void Ant::MovementTick(float deltaTime, PheromoneGrid& pheroGrid)

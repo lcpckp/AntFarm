@@ -91,9 +91,19 @@ void handleInput(sf::RenderWindow &window, std::vector<Ant> &antList, std::vecto
 void updateObjects(std::vector<Ant>& antList, PheromoneGrid &pheroGrid, std::vector<FoodSource>& foodList, std::vector<Home>& homeList, float deltaTime)
 {
     // Each ant is processed
-    for (int i = 0; i < antList.size(); i++)
+    for (std::vector<Ant>::iterator it = antList.begin(); it != antList.end(); ++it)
     {
-        antList[i].updateAnt(pheroGrid, foodList, homeList, deltaTime);
+        it->updateAnt(pheroGrid, foodList, homeList, deltaTime);
+    }
+
+    // Each food source is processed
+    for (std::vector<FoodSource>::iterator it = foodList.begin(); it != foodList.end(); ++it)
+    {
+        if (!it->hasFood())
+        {
+            foodList.erase(it);
+            break;
+        }
     }
 
     // Grid is processed

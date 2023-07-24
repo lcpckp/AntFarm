@@ -10,6 +10,7 @@ public:
 	Ant(int x, int y, PheromoneGrid& pheroGrid);
 	~Ant();
 	void updateAnt(PheromoneGrid &pheroGrid, std::vector<FoodSource>& foodList, std::vector<Home>& homeList, float deltaTime);
+	float getLifetime();
 
 private:
 	// Utility
@@ -31,6 +32,7 @@ private:
 	float movementRandomness;
 	float timeSinceHome;
 	float timeSinceFood;
+	float lifetime;
 	float touchThreshold;
 	float sightThreshold;
 	float fallOffMultiplier;
@@ -43,6 +45,7 @@ private:
 	float followStrength;
 	float turnSpeed;
 	pheroType seekingTrailType;
+	
 
 	int gridWidth, gridHeight;
 	int gridSize;
