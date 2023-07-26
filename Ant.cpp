@@ -42,10 +42,6 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	gridWidth = pheroGrid.getWidth();
 	gridHeight = pheroGrid.getHeight();
 	gridSize = pheroGrid.getSize();
-
-	// Debug stuff
-	antSampleVision = sf::VertexArray(sf::Lines, 2);
-	visionOptions = false;
 }
 
 Ant::~Ant()
@@ -55,11 +51,6 @@ Ant::~Ant()
 
 void Ant::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	if (visionOptions)
-	{
-		target.draw(antSampleVision);
-	}
-	
 	target.draw(body);
 }
 
