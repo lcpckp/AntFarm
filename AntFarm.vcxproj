@@ -158,10 +158,17 @@
     <ClInclude Include="Home.h" />
     <ClInclude Include="PheromoneGrid.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="resource1.h" />
     <ClInclude Include="Resources.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="AntFarm.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="ant_2.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

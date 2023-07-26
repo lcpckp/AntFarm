@@ -14,26 +14,28 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	body.setPosition(x, y);
 	body.setRadius(Resources::antBodyRadius);
 	body.setFillColor(Resources::antColor);
-	hasFood = false;
+	hasFood = false; // Ants start with no food by default
 
 	// Movement Settings
 	movementSpeed = 45.0f;
-	movementHeading = (std::rand() / (RAND_MAX + 1.0f)) * 2 * 4 - 4;
+	movementHeading = (std::rand() / (RAND_MAX + 1.0f)) * 8 - 4; // Starts heading at a random angle
 	movementRandomness = 0.175f;
 	touchThreshold = 1.0f;
 	sightThreshold = 50.0f;
 
 	// Pheromone Sampling
-	sampleTurnAngle = 3;
-	sampleCount = 15;
+	sampleTurnAngle = 2;
+	sampleCount = 20;
 	maxSampleDistance = 25.0f;
 	sampleIgnoreThreshold = 1.0f;
 
 	// Trail laying
-	fallOffMultiplier = 5.0f; // How quickly their trail strength dies off as they move away from home or food
+	fallOffMultiplier = 5.0f; // How quickly trail strength loses intensity as ant moves away from home or food
 	maxPheroStrength = 100.0f; // How much pheromone to lay down per second
-	followStrength = 6.0f; // How much to obey the pheromones
-	seekingTrailType = pheroType::TO_FOOD;
+	followStrength = 6.0f; // How quickly to adjust heading to follow pheromones
+	seekingTrailType = pheroType::TO_FOOD; // Ants seek food by default
+
+	// Timers
 	timeSinceHome = 100.0f;
 	timeSinceFood = 100.0f;
 	lifetime = 0.0f;

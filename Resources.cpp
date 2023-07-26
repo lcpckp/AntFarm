@@ -29,7 +29,7 @@ int Resources::numStartingAnts;
 Resources::Resources()
 {
 	// Visuals
-	generalFont.loadFromFile("Lavigne.ttf");
+	generalFont.loadFromFile("res\\Lavigne.ttf");
 	antBodyRadius = 2.0f;
 	homeBodyRadius = 20.0f;
 	foodBodyRadius = 10.0f;

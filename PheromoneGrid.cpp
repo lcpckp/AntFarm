@@ -12,7 +12,7 @@ PheromoneGrid::PheromoneGrid()
 
 	// Pherogrid Settings
 	maxPheroPerCell = 1000;
-	decayRate = 0.1f;
+	decayRate = Resources::decayRate;
 
 	// Instantiate grid data + grid drawable
 	toHomeGridDrawable = sf::VertexArray(sf::PrimitiveType::Quads, numCells * 4);
@@ -129,10 +129,10 @@ void PheromoneGrid::update(float deltaTime)
 		// If there is some level of pheromone present
 		if (toHomeIntensity[i] > 0 || toFoodIntensity[i] > 0) 
 		{
-			// Decay food and home pheromones by the decay rate per second
-			toFoodIntensity[i] *= std::pow((1 - decayRate), deltaTime); 
+			// Decay home and food pheromones by the decay rate per second
 			toHomeIntensity[i] *= std::pow((1 - decayRate), deltaTime);
-
+			toFoodIntensity[i] *= std::pow((1 - decayRate), deltaTime); 
+			
 			// If the pheromone level is less than 0.25, snap the value down to 0.0
 			if (toHomeIntensity[i] + toFoodIntensity[i] < 0.25f) 
 			{
@@ -149,7 +149,7 @@ void PheromoneGrid::update(float deltaTime)
 
 int PheromoneGrid::getSize()
 {
-	return toHomeIntensity.size();
+	return toHomeIntensity.size(); // for right now this is fine because this should always be the same size as the other grids, but who knows what the future holds
 }
 
 float PheromoneGrid::getHomeIntensity(int i)

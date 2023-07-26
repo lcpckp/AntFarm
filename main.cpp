@@ -21,7 +21,7 @@ int main()
     Resources resourceContainer = Resources();
     sf::RenderWindow window(sf::VideoMode(resourceContainer.farmWidth, resourceContainer.farmHeight), "Ant Farm");
     sf::Image icon;
-    icon.loadFromFile("ant_2.png");
+    icon.loadFromFile("res\\ant_2.png");
     window.setIcon(32, 32, icon.getPixelsPtr());
     window.setFramerateLimit(60);
     
@@ -29,11 +29,12 @@ int main()
     float lastTime = 0.0f;
     sf::Clock clock;
 
-    // Game objects
+    // Simulation objects
     std::vector<Ant> antList;
-    PheromoneGrid pheroGrid;
     std::vector<FoodSource> foodList;
     std::vector<Home> homeList;
+
+    PheromoneGrid pheroGrid;
     
     // Temporary start conditions
     homeList.push_back(Home(Resources::farmWidth / 2, Resources::farmHeight / 2));
