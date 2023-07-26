@@ -1,10 +1,10 @@
 # Ant Simulator
 
-Right Click to create a food source (starts with 3000 food)
+Right click to create a source of food.
 
-Left Click to spawn 50 ants.
+Left click to create some ants.
 
-Haven't implemented a lot of basic features, so it's a bit clunky to use.
+Press Space to show/hide pheromone trails.
 
-Ant.cpp - the constructor contains a lot of the ants trail following and sampling settings.
-
+Ant.cpp - contains ant's trail following, trail laying, and sampling settings.
+Resources.cpp - contains general simulation settings.
