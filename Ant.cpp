@@ -19,21 +19,21 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	// Movement Settings
 	movementSpeed = 45.0f;
 	movementHeading = (std::rand() / (RAND_MAX + 1.0f)) * 2 * 4 - 4;
-	movementRandomness = 0.15f;
-	touchThreshold = 5.0f;
+	movementRandomness = 0.175f;
+	touchThreshold = 1.0f;
 	sightThreshold = 50.0f;
 
 	// Pheromone Sampling
 	sampleTurnAngle = 3;
 	sampleCount = 15;
-	maxSampleDistance = 15.0f;
+	maxSampleDistance = 25.0f;
 	sampleIgnoreThreshold = 1.0f;
 
 	// Trail laying
 	fallOffMultiplier = 5.0f; // How quickly their trail strength dies off as they move away from home or food
-	maxPheroStrength = 200.0f; // How much pheromone to lay down per tick
-	followStrength = 4.0f; // How much to obey the pheromones
-	seekingTrailType = pheroType::TO_FOOD; // default is looking for food
+	maxPheroStrength = 100.0f; // How much pheromone to lay down per second
+	followStrength = 6.0f; // How much to obey the pheromones
+	seekingTrailType = pheroType::TO_FOOD;
 	timeSinceHome = 100.0f;
 	timeSinceFood = 100.0f;
 	lifetime = 0.0f;
@@ -70,15 +70,12 @@ void Ant::updateAnt(PheromoneGrid& pheroGrid, std::vector<FoodSource>& foodList,
 	timeSinceFood += deltaTime; //might be able to just have one but will need two if they can do two trails at once
 	lifetime += deltaTime;
 	
-
 	// Check if we can grab or see a food source
 	// Also updates heading directly to food source if within sight threshold
 	if (!hasFood)
 		TryGetFood(foodList);
 	else
 		TryDepositFood(homeList);
-	
-	
 	
 	// Sample and calculate desired heading, and difference between desired + actual heading
 	desiredHeading = CalculatePheromoneFollowAngle(pheroGrid);
@@ -118,8 +115,8 @@ void Ant::MovementTick(float deltaTime, PheromoneGrid& pheroGrid)
 	if (body.getPosition().x > gridWidth || body.getPosition().y > gridHeight || body.getPosition().x < 0 || body.getPosition().y < 0)
 	{
 		movementHeading += 3.14f; // Turn around
-		timeSinceHome += 5.0f; // Penalty to pheromones for hitting a wall
-		timeSinceFood += 5.0f; // Penalty to pheromones for hitting a wall
+		timeSinceHome += 100.0f; // Penalty to pheromones for hitting a wall
+		timeSinceFood += 100.0f; // Penalty to pheromones for hitting a wall
 		body.setPosition(sf::Vector2f((float)std::max(0, std::min((int)body.getPosition().x, gridWidth)), (float)std::max(0, std::min((int)body.getPosition().y, gridHeight))));
 	}
 }
@@ -142,7 +139,7 @@ void Ant::TryDepositFood(std::vector<Home>& homeList)
 				hasFood = false;
 				timeSinceHome = 0.0f;
 				seekingTrailType = pheroType::TO_FOOD;
-				movementHeading += 3.14;
+				movementHeading += 3.14f;
 			}
 		}
 		else if (distanceToHome < sightThreshold)
@@ -168,7 +165,7 @@ void Ant::TryGetFood(std::vector<FoodSource>& foodList)
 				hasFood = true;
 				timeSinceFood = 0.0f;
 				seekingTrailType = pheroType::TO_HOME;
-				movementHeading += 3.14;
+				movementHeading += 3.14f;
 			}
 		}
 		else if (distanceToFood < sightThreshold && foodList[i].hasFood())

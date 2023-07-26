@@ -1,4 +1,5 @@
 #include<iostream>
+#include<thread>
 #include<SFML/Graphics.hpp>
 #include"Home.h"
 #include"Ant.h"
@@ -7,35 +8,47 @@
 #include"FoodSource.h"
 
 
-bool drawTrails = true;
-void handleInput(sf::RenderWindow &window, std::vector<Ant> &antList, std::vector<FoodSource>& foodList, PheromoneGrid& pheroGrid, Resources& resourceContainer);
+bool drawTrails = false;
+void handleInput(sf::RenderWindow &window, std::vector<Ant> &antList, std::vector<FoodSource>& foodList, PheromoneGrid& pheroGrid);
 void updateObjects(std::vector<Ant> &antList, PheromoneGrid &pheroGrid, std::vector<FoodSource>& foodList, std::vector<Home>& homeList, float deltaTime);
 void drawObjects(sf::RenderWindow &window, std::vector<Ant> &antList, PheromoneGrid &pheroGrid, std::vector<FoodSource>& foodList, std::vector<Home>& homeList);
+void spawnAnts(sf::Event& event, std::vector<Ant>& antList, PheromoneGrid& pheroGrid);
+void spawnFood(sf::Event& event, std::vector<FoodSource>& foodList);
 
 int main()
 {
     // Set up resource container (contains general settings + textures), render window from SFML, and clock for deltaTime for framerate independence
     Resources resourceContainer = Resources();
     sf::RenderWindow window(sf::VideoMode(resourceContainer.farmWidth, resourceContainer.farmHeight), "Ant Farm");
+    sf::Image icon;
+    icon.loadFromFile("ant_2.png");
+    window.setIcon(32, 32, icon.getPixelsPtr());
     window.setFramerateLimit(60);
-    sf::Clock clock;
+    
     float deltaTime = 0.0f;
+    float lastTime = 0.0f;
+    sf::Clock clock;
 
     // Game objects
     std::vector<Ant> antList;
     PheromoneGrid pheroGrid;
     std::vector<FoodSource> foodList;
     std::vector<Home> homeList;
-
     
     // Temporary start conditions
-    homeList.push_back(Home(resourceContainer.farmWidth / 2, resourceContainer.farmHeight / 2));
+    homeList.push_back(Home(Resources::farmWidth / 2, Resources::farmHeight / 2));
+    for (int i = 0; i < Resources::numStartingAnts; i++)
+    {
+        Ant newAnt = Ant(Resources::farmWidth / 2, Resources::farmHeight / 2, pheroGrid);
+        antList.push_back(newAnt);
+    }
 
     while (window.isOpen())
     {
         deltaTime = clock.restart().asSeconds();
+
         // Handle Inputs
-        handleInput(window, antList, foodList, pheroGrid, resourceContainer);
+        handleInput(window, antList, foodList, pheroGrid);
 
         // Update objects
         updateObjects(antList, pheroGrid, foodList, homeList, deltaTime);
@@ -47,7 +60,7 @@ int main()
 	return 0;
 }
 
-void handleInput(sf::RenderWindow &window, std::vector<Ant> &antList, std::vector<FoodSource>& foodList, PheromoneGrid& pheroGrid, Resources& resourceContainer)
+void handleInput(sf::RenderWindow &window, std::vector<Ant> &antList, std::vector<FoodSource>& foodList, PheromoneGrid& pheroGrid)
 {
     sf::Event event;
     while (window.pollEvent(event))
@@ -63,17 +76,11 @@ void handleInput(sf::RenderWindow &window, std::vector<Ant> &antList, std::vecto
             {
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
-                    for (int i = 0; i < resourceContainer.spawnClick; i++)
-                    {
-                        Ant newAnt = Ant(event.mouseButton.x, event.mouseButton.y, pheroGrid);
-                        antList.push_back(newAnt);
-                    }
-                    break;
+                    spawnAnts(event, antList, pheroGrid);
                 }
                 else if (event.mouseButton.button == sf::Mouse::Right)
                 {
-                    FoodSource newFoodSource = FoodSource(event.mouseButton.x, event.mouseButton.y);
-                    foodList.push_back(newFoodSource);
+                    spawnFood(event, foodList);
                 }
                 break;
             }
@@ -85,6 +92,28 @@ void handleInput(sf::RenderWindow &window, std::vector<Ant> &antList, std::vecto
                 }
             }
         }
+    }
+}
+
+void spawnFood(sf::Event& event, std::vector<FoodSource>& foodList)
+{
+    if (foodList.size() < Resources::maxFoodSources)
+    {
+        FoodSource newFoodSource = FoodSource(event.mouseButton.x, event.mouseButton.y);
+        foodList.push_back(newFoodSource);
+    }
+    else
+    {
+        std::cout << "Too many food sources" << std::endl;
+    }
+}
+
+void spawnAnts(sf::Event& event, std::vector<Ant>& antList, PheromoneGrid& pheroGrid)
+{
+    for (int i = 0; i < Resources::numAntsPerClick; i++)
+    {
+        Ant newAnt = Ant(event.mouseButton.x, event.mouseButton.y, pheroGrid);
+        antList.push_back(newAnt);
     }
 }
 
@@ -115,6 +144,8 @@ void drawObjects(sf::RenderWindow& window, std::vector<Ant>& antList, PheromoneG
     // First, clear the window
     window.clear(sf::Color(254, 217, 155));
 
+    
+
     // Draw Phero Grid
     if (drawTrails)
     {
@@ -138,8 +169,6 @@ void drawObjects(sf::RenderWindow& window, std::vector<Ant>& antList, PheromoneG
     {
         window.draw(foodList[i]);
     }
-
-    
 
     // Finally, display drawn objects
     window.display();

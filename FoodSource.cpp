@@ -35,11 +35,11 @@ FoodSource::FoodSource()
 
 FoodSource::FoodSource(float x, float y)
 {
-	foodAmount = 3000;
-	body.setOrigin(10,10);
+	foodAmount = Resources::foodStartingAmount;
+	body.setOrigin(Resources::foodBodyRadius, Resources::foodBodyRadius);
 	body.setPosition(sf::Vector2f(x, y));
 	body.setFillColor(Resources::foodColor);
-	body.setRadius(10.0f);
+	body.setRadius(Resources::foodBodyRadius);
 
 	foodAmountText.setPosition(sf::Vector2f(x, y));
 	foodAmountText.setFillColor(sf::Color::White);

@@ -11,10 +11,46 @@ sf::Color Resources::foodColor;
 sf::Color Resources::enemyColor;
 
 float Resources::antBodyRadius;
+float Resources::homeBodyRadius;
+float Resources::foodBodyRadius;
+
+int Resources::pheroResolution;
+float Resources::decayRate;
+int Resources::farmHeight;
+int Resources::farmWidth;
+
+int Resources::maxFoodSources;
+int Resources::foodStartingAmount;
+
+int Resources::numAntsPerClick;
+int Resources::numStartingAnts;
+
 
 Resources::Resources()
 {
+	// Visuals
 	generalFont.loadFromFile("Lavigne.ttf");
+	antBodyRadius = 2.0f;
+	homeBodyRadius = 20.0f;
+	foodBodyRadius = 10.0f;
+
+	// Global settings
+	farmWidth = 960;
+	farmHeight = 540;
+
+	// Pheromone Grid settings
+	pheroResolution = 3;
+	decayRate = 0.1f;
+
+	// Simulation Rules
+	maxFoodSources = 6;
+	numAntsPerClick = 5;
+
+	// Starting Conditions
+	foodStartingAmount = 15000;
+	numStartingAnts = 500;
+
+	// Color Scheme
 	groundColor = sf::Color(254, 217, 155);
 	antColor = sf::Color(31, 32, 65);
 	homeTrailColor = sf::Color(91, 133, 170, 0);
@@ -23,8 +59,6 @@ Resources::Resources()
 	homeColor = sf::Color(81, 123, 160);
 	foodColor = sf::Color(161, 215, 126);
 	enemyColor = sf::Color(216, 171, 136);
-
-	antBodyRadius = 2.0f;
 }
 
 Resources::~Resources()

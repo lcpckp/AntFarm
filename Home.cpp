@@ -4,9 +4,9 @@
 Home::Home(int x, int y)
 {
 	foodStoreCount = 0;
-	body.setOrigin(20, 20);
+	body.setOrigin(Resources::homeBodyRadius, Resources::homeBodyRadius);
 	body.setPosition(sf::Vector2f(x, y));
-	body.setRadius(20.0f);
+	body.setRadius(Resources::homeBodyRadius);
 	body.setFillColor(Resources::homeColor);
 
 	foodStoreText.setPosition(sf::Vector2f(x, y));

@@ -8,15 +8,23 @@ class Resources
 public:
 	Resources();
 	~Resources();
-	static const int farmWidth = 960;
-	static const int farmHeight = 540; 
-	static const int pheroResolution = 3;
-	static const int spawnClick = 200;
+	static int farmWidth;
+	static int farmHeight;
+
+	static int pheroResolution;
+	static float decayRate;
+
+	static int numAntsPerClick;
+	static int maxFoodSources;
+	static int foodStartingAmount;
+
+	static int numStartingAnts;
 
 	static float antBodyRadius;
+	static float homeBodyRadius;
+	static float foodBodyRadius;
 
 	static sf::Font generalFont;
-
 	static sf::Color groundColor;
 	static sf::Color antColor;
 	static sf::Color homeTrailColor;
