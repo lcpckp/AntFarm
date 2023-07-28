@@ -10,8 +10,8 @@
 
 bool drawTrails = false;
 void handleInput(sf::RenderWindow &window, std::vector<Ant> &antList, std::vector<FoodSource>& foodList, PheromoneGrid& pheroGrid);
-void updateObjects(std::vector<Ant> &antList, PheromoneGrid &pheroGrid, std::vector<FoodSource>& foodList, std::vector<Home>& homeList, float deltaTime);
-void drawObjects(sf::RenderWindow &window, std::vector<Ant> &antList, PheromoneGrid &pheroGrid, std::vector<FoodSource>& foodList, std::vector<Home>& homeList);
+void updateObjects(std::vector<Ant> &antList, std::vector<FoodSource>& foodList, std::vector<Home>& homeList, PheromoneGrid& pheroGrid, float deltaTime);
+void drawObjects(sf::RenderWindow &window, std::vector<Ant> &antList, std::vector<FoodSource>& foodList, std::vector<Home>& homeList, PheromoneGrid& pheroGrid);
 void spawnAnts(sf::Event& event, std::vector<Ant>& antList, PheromoneGrid& pheroGrid);
 void spawnFood(sf::Event& event, std::vector<FoodSource>& foodList);
 
@@ -19,7 +19,7 @@ int main()
 {
     // Set up resource container (contains general settings + textures), render window from SFML, and clock for deltaTime for framerate independence
     Resources resourceContainer = Resources();
-    sf::RenderWindow window(sf::VideoMode(resourceContainer.farmWidth, resourceContainer.farmHeight), "Ant Farm");
+    sf::RenderWindow window(sf::VideoMode(resourceContainer.farmWidth, resourceContainer.farmHeight), "Ant Farm", sf::Style::Close);
     sf::Image icon;
     icon.loadFromFile("res\\ant_2.png");
     window.setIcon(32, 32, icon.getPixelsPtr());
@@ -52,10 +52,10 @@ int main()
         handleInput(window, antList, foodList, pheroGrid);
 
         // Update objects
-        updateObjects(antList, pheroGrid, foodList, homeList, deltaTime);
+        updateObjects(antList, foodList, homeList, pheroGrid, deltaTime);
 
         // Draw objects
-        drawObjects(window, antList, pheroGrid, foodList, homeList);
+        drawObjects(window, antList, foodList, homeList, pheroGrid);
     }
 
 	return 0;
@@ -118,7 +118,7 @@ void spawnAnts(sf::Event& event, std::vector<Ant>& antList, PheromoneGrid& phero
     }
 }
 
-void updateObjects(std::vector<Ant>& antList, PheromoneGrid &pheroGrid, std::vector<FoodSource>& foodList, std::vector<Home>& homeList, float deltaTime)
+void updateObjects(std::vector<Ant>& antList, std::vector<FoodSource>& foodList, std::vector<Home>& homeList, PheromoneGrid& pheroGrid, float deltaTime)
 {
     // Each ant is processed
     for (std::vector<Ant>::iterator it = antList.begin(); it != antList.end(); ++it)
@@ -139,7 +139,7 @@ void updateObjects(std::vector<Ant>& antList, PheromoneGrid &pheroGrid, std::vec
     // Grid is processed
     pheroGrid.update(deltaTime);
 }
-void drawObjects(sf::RenderWindow& window, std::vector<Ant>& antList, PheromoneGrid &pheroGrid, std::vector<FoodSource>& foodList, std::vector<Home>& homeList)
+void drawObjects(sf::RenderWindow& window, std::vector<Ant>& antList, std::vector<FoodSource>& foodList, std::vector<Home>& homeList, PheromoneGrid& pheroGrid)
 {
     
     // First, clear the window
