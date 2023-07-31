@@ -16,6 +16,7 @@ float Resources::foodBodyRadius;
 
 int Resources::pheroResolution;
 float Resources::decayRate;
+float Resources::maxPheroPerCell;
 int Resources::farmHeight;
 int Resources::farmWidth;
 
@@ -40,14 +41,15 @@ Resources::Resources()
 
 	// Pheromone Grid settings
 	pheroResolution = 3;
-	decayRate = 0.1f;
+	decayRate = 0.05f;
+	maxPheroPerCell = 1000.0f;
 
 	// Simulation Rules
 	maxFoodSources = 6;
 	numAntsPerClick = 5;
 
 	// Starting Conditions
-	foodStartingAmount = 15000;
+	foodStartingAmount = 99999;
 	numStartingAnts = 500;
 
 	// Color Scheme

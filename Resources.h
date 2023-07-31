@@ -13,6 +13,7 @@ public:
 
 	static int pheroResolution;
 	static float decayRate;
+	static float maxPheroPerCell;
 
 	static int numAntsPerClick;
 	static int maxFoodSources;

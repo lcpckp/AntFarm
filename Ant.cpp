@@ -17,22 +17,22 @@ Ant::Ant(int x, int y, PheromoneGrid& pheroGrid)
 	hasFood = false; // Ants start with no food by default
 
 	// Movement Settings
-	movementSpeed = 45.0f;
+	movementSpeed = 100.0f;
 	movementHeading = (std::rand() / (RAND_MAX + 1.0f)) * 8 - 4; // Starts heading at a random angle
 	movementRandomness = 0.175f;
-	touchThreshold = 1.0f;
+	touchThreshold = 5.0f;
 	sightThreshold = 50.0f;
 
 	// Pheromone Sampling
 	sampleTurnAngle = 2;
 	sampleCount = 20;
-	maxSampleDistance = 25.0f;
+	maxSampleDistance = 20.0f;
 	sampleIgnoreThreshold = 1.0f;
 
 	// Trail laying
 	fallOffMultiplier = 5.0f; // How quickly trail strength loses intensity as ant moves away from home or food
 	maxPheroStrength = 100.0f; // How much pheromone to lay down per second
-	followStrength = 6.0f; // How quickly to adjust heading to follow pheromones
+	followStrength = 10.0f; // How quickly to adjust heading to follow pheromones
 	seekingTrailType = pheroType::TO_FOOD; // Ants seek food by default
 
 	// Timers

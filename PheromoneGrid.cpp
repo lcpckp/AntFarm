@@ -4,16 +4,16 @@
 
 PheromoneGrid::PheromoneGrid()
 {
-	// Get dimensions from resource container
+	// Geometry of grid
 	height = Resources::farmHeight;
 	width = Resources::farmWidth;
 	numCells = height * width;
 	pheroResolution = Resources::pheroResolution;
 
-	// Pherogrid Settings
-	maxPheroPerCell = 1000;
+	// Pheromone Settings
+	maxPheroPerCell = Resources::maxPheroPerCell;
 	decayRate = Resources::decayRate;
-
+	
 	// Instantiate grid data + grid drawable
 	toHomeGridDrawable = sf::VertexArray(sf::PrimitiveType::Quads, numCells * 4);
 	toFoodGridDrawable = sf::VertexArray(sf::PrimitiveType::Quads, numCells * 4);
@@ -149,7 +149,7 @@ void PheromoneGrid::update(float deltaTime)
 
 int PheromoneGrid::getSize()
 {
-	return toHomeIntensity.size(); // for right now this is fine because this should always be the same size as the other grids, but who knows what the future holds
+	return numCells;
 }
 
 float PheromoneGrid::getHomeIntensity(int i)
