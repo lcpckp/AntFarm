@@ -27,7 +27,11 @@ Home::~Home()
 void Home::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.draw(body);
-	target.draw(foodStoreText);
+
+	if (Resources::showInfo)
+	{
+		target.draw(foodStoreText);
+	}
 }
 
 std::pair<float, float> Home::getPosition()

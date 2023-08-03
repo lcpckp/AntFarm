@@ -7,9 +7,7 @@
 #include"PheromoneGrid.h"
 #include"FoodSource.h"
 
-
-bool drawTrails = true;
-bool runMultiThreaded = true;
+bool runMultiThreaded = false;
 
 void mainLoop(sf::Clock& clock, sf::RenderWindow& window, std::vector<Ant>& antList, std::vector<FoodSource>& foodList, std::vector<Home>& homeList, PheromoneGrid& pheroGrid, float deltaTime);
 
@@ -123,7 +121,7 @@ void handleInput(sf::RenderWindow &window, std::vector<Ant> &antList, std::vecto
             {
                 if (event.key.code == sf::Keyboard::Space)
                 {
-                    drawTrails = !drawTrails;
+                    Resources::showInfo = !Resources::showInfo;
                 }
             }
         }
@@ -210,7 +208,7 @@ void drawObjects(sf::RenderWindow& window, std::vector<Ant>& antList, std::vecto
     
 
     // Draw Phero Grid
-    if (drawTrails)
+    if (Resources::showInfo)
     {
         window.draw(pheroGrid);
     }

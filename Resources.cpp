@@ -26,6 +26,7 @@ int Resources::foodStartingAmount;
 int Resources::numAntsPerClick;
 int Resources::numStartingAnts;
 
+bool Resources::showInfo;
 
 Resources::Resources()
 {
@@ -61,6 +62,8 @@ Resources::Resources()
 	homeColor = sf::Color(81, 123, 160);
 	foodColor = sf::Color(161, 215, 126);
 	enemyColor = sf::Color(216, 171, 136);
+
+	showInfo = false;
 }
 
 Resources::~Resources()

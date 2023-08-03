@@ -25,7 +25,11 @@ bool FoodSource::hasFood()
 void FoodSource::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.draw(body);
-	target.draw(foodAmountText);
+	
+	if (Resources::showInfo)
+	{
+		target.draw(foodAmountText);
+	}
 }
 
 FoodSource::FoodSource()

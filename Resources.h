@@ -34,6 +34,8 @@ public:
 	static sf::Color homeColor;
 	static sf::Color foodColor;
 	static sf::Color enemyColor;
+
+	static bool showInfo;
 private:
 	
 };
